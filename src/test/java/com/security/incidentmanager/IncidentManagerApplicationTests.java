@@ -1,4 +1,4 @@
-package com.security.incident_manager;
+package com.security.incidentmanager;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

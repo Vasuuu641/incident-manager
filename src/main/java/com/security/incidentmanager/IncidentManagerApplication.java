@@ -1,4 +1,4 @@
-package com.security.incident_manager;
+package com.security.incidentmanager;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
