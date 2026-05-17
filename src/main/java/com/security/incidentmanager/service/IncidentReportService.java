@@ -1,6 +1,5 @@
 package com.security.incidentmanager.service;
 
-import com.security.incidentmanager.domain.Asset;
 import com.security.incidentmanager.domain.IncidentReport;
 import com.security.incidentmanager.repository.IncidentReportRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +23,7 @@ public class IncidentReportService {
         return incidentReportRepository.findById(id).orElseThrow(() -> new RuntimeException("Incident not found"));
     }
 
-    public void deleteById(Long id) {
+    public void delete(Long id) {
         incidentReportRepository.deleteById(id);
     }
 
