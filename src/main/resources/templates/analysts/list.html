@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head}"></head>
+<body>
+<nav th:replace="~{layout :: navbar}"></nav>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2>Analysts</h2>
+            <p class="text-secondary">Security analysts assigned to incidents</p>
+        </div>
+        <a href="/analysts/new" class="btn btn-danger">+ New Analyst</a>
+    </div>
+    <div class="card">
+        <div class="card-body p-0">
+            <table class="table table-dark table-hover mb-0">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Specialization</th>
+                    <th>Incidents</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${#lists.isEmpty(analysts)}">
+                    <td colspan="6"
+                        class="text-center text-secondary py-4">
+                        No analysts registered yet.
+                    </td>
+                </tr>
+                <tr th:each="analyst : ${analysts}">
+                    <td th:text="${analyst.id}"></td>
+                    <td th:text="${analyst.name}"></td>
+                    <td th:text="${analyst.email}"></td>
+                    <td th:text="${analyst.specialization}"></td>
+                    <td th:text="${analyst.incidents != null} ?
+                            ${analyst.incidents.size()} : 0">
+                    </td>
+                    <td>
+                        <a th:href="@{/analysts/{id}/edit(id=${analyst.id})}"
+                           class="btn btn-sm btn-outline-warning me-1">
+                            Edit
+                        </a>
+                        <form th:action="@{/analysts/{id}/delete(id=${analyst.id})}"
+                              method="post" style="display:inline"
+                              onsubmit="return confirm('Delete this analyst?')">
+                            <button class="btn btn-sm btn-outline-danger">
+                                Delete
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>
