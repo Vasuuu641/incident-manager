@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head}"></head>
+<body>
+<nav th:replace="~{layout :: navbar}"></nav>
+<div class="container mt-4">
+    <div class="mb-4">
+        <h2 th:text="${incident.id == null} ? 'Report New Incident' : 'Edit Incident'"></h2>
+        <p class="text-secondary">
+            Fill in the details below to log a security incident
+        </p>
+    </div>
+    <div class="card p-4">
+        <form th:action="${incident.id == null} ? @{/incidents} : @{/incidents/{id}(id=${incident.id})}"
+              method="post">
+            <div class="mb-3">
+                <label class="form-label">Title *</label>
+                <input type="text" name="title"
+                       class="form-control"
+                       th:value="${incident.title}"
+                       placeholder="Brief description of the incident"
+                       required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Description</label>
+                <textarea name="description"
+                          class="form-control" rows="3"
+                          placeholder="Detailed description of what happened"
+                          th:text="${incident.description}">
+                </textarea>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Status *</label>
+                    <select name="status" class="form-select" required>
+                        <option value="">Select status</option>
+                        <option value="OPEN"
+                                th:selected="${incident.status == 'OPEN'}">
+                            Open
+                        </option>
+                        <option value="IN_PROGRESS"
+                                th:selected="${incident.status == 'IN_PROGRESS'}">
+                            In Progress
+                        </option>
+                        <option value="RESOLVED"
+                                th:selected="${incident.status == 'RESOLVED'}">
+                            Resolved
+                        </option>
+                        <option value="CLOSED"
+                                th:selected="${incident.status == 'CLOSED'}">
+                            Closed
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Assign Analyst</label>
+                    <select name="analyst.id" class="form-select">
+                        <option value="">Unassigned</option>
+                        <option th:each="analyst : ${analysts}"
+                                th:value="${analyst.id}"
+                                th:text="${analyst.name}"
+                                th:selected="${incident.analyst != null and incident.analyst.id == analyst.id}">
+                        </option>
+                    </select>
+                </div>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Tags</label>
+                <div class="d-flex flex-wrap gap-2">
+                    <div th:each="tag : ${tags}"
+                         class="form-check">
+                        <input class="form-check-input"
+                               type="checkbox"
+                               name="tags"
+                               th:value="${tag.id}"
+                               th:id="${'tag-' + tag.id}"
+                               th:checked="${incident.tags != null and incident.tags.contains(tag)}">
+                        <label class="form-check-label"
+                               th:for="${'tag-' + tag.id}"
+                               th:text="${tag.name}">
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-danger">
+                    Save Incident
+                </button>
+                <a href="/incidents" class="btn btn-outline-secondary">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
