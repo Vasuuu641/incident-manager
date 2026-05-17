@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head}"></head>
+<body>
+<nav th:replace="~{layout :: navbar}"></nav>
+<div class="container mt-4">
+    <div class="mb-4">
+        <h2 th:text="${report.id == null} ?
+            'New Report' : 'Edit Report'"></h2>
+        <p class="text-secondary">
+            Document findings and recommendations
+        </p>
+    </div>
+    <div class="card p-4">
+        <form th:action="${report.id == null} ? @{/reports} :
+              @{/reports/{id}(id=${report.id})}" method="post">
+            <div class="mb-3">
+                <label class="form-label">Severity *</label>
+                <select name="severity" class="form-select" required>
+                    <option value="">Select severity</option>
+                    <option value="LOW"
+                            th:selected="${report.severity == 'LOW'}">
+                        Low
+                    </option>
+                    <option value="MEDIUM"
+                            th:selected="${report.severity == 'MEDIUM'}">
+                        Medium
+                    </option>
+                    <option value="HIGH"
+                            th:selected="${report.severity == 'HIGH'}">
+                        High
+                    </option>
+                    <option value="CRITICAL"
+                            th:selected="${report.severity == 'CRITICAL'}">
+                        Critical
+                    </option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Findings *</label>
+                <textarea name="findings"
+                          class="form-control" rows="4"
+                          placeholder="What was discovered during investigation?"
+                          th:text="${report.findings}" required>
+                </textarea>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Recommendations</label>
+                <textarea name="recommendations"
+                          class="form-control" rows="4"
+                          placeholder="What actions should be taken?"
+                          th:text="${report.recommendations}">
+                </textarea>
+            </div>
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-danger">
+                    Save Report
+                </button>
+                <a href="/reports"
+                   class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
