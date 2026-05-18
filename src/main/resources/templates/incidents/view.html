@@ -10,8 +10,7 @@
             <span class="badge"
                   th:classappend="${incident.status == 'OPEN'} ? 'badge-open' :
                                (${incident.status == 'IN_PROGRESS'} ? 'badge-progress' :
-                               (${incident.status == 'RESOLVED'} ? 'badge-resolved' :
-                               'badge-closed'))"
+                               (${incident.status == 'RESOLVED'} ? 'badge-resolved' : 'badge-closed'))"
                   th:text="${incident.status}">
             </span>
         </div>
@@ -33,15 +32,12 @@
                 <div class="row mt-3">
                     <div class="col-md-6">
                         <small class="text-secondary">Detected</small>
-                        <p th:text="${incident.detectedAt != null} ?
-                           ${#temporals.format(incident.detectedAt,
-                           'dd MMM yyyy HH:mm')} : 'Unknown'">
+                        <p th:text="${incident.detectedAt != null ? #temporals.format(incident.detectedAt, 'dd MMM yyyy HH:mm') : 'Unknown'}">
                         </p>
                     </div>
                     <div class="col-md-6">
                         <small class="text-secondary">Assigned Analyst</small>
-                        <p th:text="${incident.analyst != null} ?
-                           ${incident.analyst.name} : 'Unassigned'">
+                        <p th:text="${incident.analyst != null ? incident.analyst.name : 'Unassigned'}">
                         </p>
                     </div>
                 </div>
@@ -64,8 +60,7 @@
                         <span class="badge"
                               th:classappend="${incident.report.severity == 'CRITICAL'} ? 'bg-danger' :
                                            (${incident.report.severity == 'HIGH'} ? 'badge-open' :
-                                           (${incident.report.severity == 'MEDIUM'} ? 'badge-progress' :
-                                           'bg-secondary'))"
+                                           (${incident.report.severity == 'MEDIUM'} ? 'badge-progress' : 'bg-secondary'))"
                               th:text="${incident.report.severity}">
                         </span>
                     </p>
@@ -82,7 +77,11 @@
         </div>
         <div class="col-md-4">
             <div class="card p-4">
-                <h5 class="mb-3">Affected Assets</h5>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0">Affected Assets</h5>
+                    <a th:href="@{/assets/new(incidentId=${incident.id})}"
+                       class="btn btn-sm btn-outline-danger">+ Add</a>
+                </div>
                 <div th:if="${incident.assets == null or incident.assets.isEmpty()}"
                      class="text-secondary">
                     No assets linked to this incident.
@@ -90,9 +89,22 @@
                 <div th:each="asset : ${incident.assets}"
                      class="mb-2 p-2"
                      style="border: 1px solid #30363d; border-radius: 6px;">
-                    <div th:text="${asset.hostname}"></div>
-                    <small class="text-secondary"
-                           th:text="${asset.ipAddress}"></small>
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div th:text="${asset.hostname}"></div>
+                            <small class="text-secondary"
+                                   th:text="${asset.ipAddress}"></small>
+                            <br>
+                            <small class="badge bg-secondary"
+                                   th:text="${asset.assetType}"></small>
+                        </div>
+                        <form th:action="@{/assets/{id}/delete(id=${asset.id})}"
+                              method="post">
+                            <input type="hidden" name="incidentId"
+                                   th:value="${incident.id}">
+                            <button class="btn btn-sm btn-outline-danger">×</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>

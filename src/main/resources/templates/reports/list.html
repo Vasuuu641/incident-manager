@@ -35,19 +35,15 @@
                 <tr th:each="report : ${reports}">
                     <td th:text="${report.id}"></td>
                     <td>
-                            <span class="badge"
-                                  th:classappend="${report.severity == 'CRITICAL'} ? 'bg-danger' :
+                        <span class="badge"
+                              th:classappend="${report.severity == 'CRITICAL'} ? 'bg-danger' :
                                                (${report.severity == 'HIGH'} ? 'badge-open' :
-                                               (${report.severity == 'MEDIUM'} ? 'badge-progress' :
-                                               'bg-secondary'))"
-                                  th:text="${report.severity}">
-                            </span>
+                                               (${report.severity == 'MEDIUM'} ? 'badge-progress' : 'bg-secondary'))"
+                              th:text="${report.severity}">
+                        </span>
                     </td>
                     <td th:text="${#strings.abbreviate(report.findings, 60)}"></td>
-                    <td th:text="${report.createdAt != null} ?
-                            ${#temporals.format(report.createdAt,
-                            'dd MMM yyyy')} : '-'">
-                    </td>
+                    <td th:text="${report.createdAt != null ? #temporals.format(report.createdAt, 'dd MMM yyyy') : '-'}"></td>
                     <td>
                         <a th:href="@{/reports/{id}/edit(id=${report.id})}"
                            class="btn btn-sm btn-outline-warning me-1">

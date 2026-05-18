@@ -17,5 +17,7 @@ public class Asset {
 
     @ManyToOne
     @JoinColumn(name = "incident_id")
+    @lombok.EqualsAndHashCode.Exclude
+    @lombok.ToString.Exclude
     private Incident incident;
 }
