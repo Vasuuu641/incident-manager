@@ -23,5 +23,7 @@ public class IncidentReport {
     private LocalDateTime createdAt;
 
     @OneToOne(mappedBy = "report")
+    @lombok.EqualsAndHashCode.Exclude
+    @lombok.ToString.Exclude
     private Incident incident; // OneToOne back reference
 }

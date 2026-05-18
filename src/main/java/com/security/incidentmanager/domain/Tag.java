@@ -18,5 +18,7 @@ public class Tag {
     private String color; // e.g. "#FF0000" for UI badge color
 
     @ManyToMany(mappedBy = "tags")
+    @lombok.EqualsAndHashCode.Exclude
+    @lombok.ToString.Exclude
     private Set<Incident> incidents;
 }

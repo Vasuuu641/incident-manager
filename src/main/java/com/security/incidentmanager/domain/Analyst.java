@@ -20,5 +20,7 @@ public class Analyst {
     private String specialization; // e.g. "Network Security", "Malware Analysis"
 
     @OneToMany(mappedBy = "analyst", cascade = CascadeType.ALL)
+    @lombok.EqualsAndHashCode.Exclude
+    @lombok.ToString.Exclude
     private List<Incident> incidents; // OneToMany
 }

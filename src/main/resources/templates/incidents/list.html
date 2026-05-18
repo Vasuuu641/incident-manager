@@ -37,21 +37,21 @@
                     <td th:text="${incident.id}"></td>
                     <td th:text="${incident.title}"></td>
                     <td>
-                            <span class="badge"
-                                  th:classappend="${incident.status == 'OPEN'} ? 'badge-open' :
+                        <span class="badge"
+                              th:classappend="${incident.status == 'OPEN'} ? 'badge-open' :
                                                (${incident.status == 'IN_PROGRESS'} ? 'badge-progress' :
-                                               (${incident.status == 'RESOLVED'} ? 'badge-resolved' :
-                                               'badge-closed'))"
-                                  th:text="${incident.status}">
-                            </span>
+                                               (${incident.status == 'RESOLVED'} ? 'badge-resolved' : 'badge-closed'))"
+                              th:text="${incident.status}">
+                        </span>
                     </td>
-                    <td th:text="${incident.analyst != null} ? ${incident.analyst.name} : 'Unassigned'"></td>
-                    <td th:text="${incident.detectedAt != null} ? ${#temporals.format(incident.detectedAt, 'dd MMM yyyy HH:mm')} : '-'"></td>
+                    <td th:text="${incident.analyst != null ? incident.analyst.name : 'Unassigned'}"></td>
+                    <td th:text="${incident.detectedAt != null ? #temporals.format(incident.detectedAt, 'dd MMM yyyy HH:mm') : '-'}"></td>
                     <td>
-                            <span th:each="tag : ${incident.tags}"
-                                  class="badge bg-secondary me-1"
-                                  th:text="${tag.name}">
-                            </span>
+                        <span th:if="${incident.tags != null}"
+                              th:each="tag : ${incident.tags}"
+                              class="badge bg-secondary me-1"
+                              th:text="${tag.name}">
+                        </span>
                     </td>
                     <td>
                         <a th:href="@{/incidents/{id}(id=${incident.id})}"
