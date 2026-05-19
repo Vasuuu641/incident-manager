@@ -165,13 +165,13 @@ src/main/resources/
 ## 🚀 Project Status
 
 - [x] Project setup and configuration
-- [ ] Domain entities with JPA relationships
-- [ ] Repository and service layer
-- [ ] REST API controllers
-- [ ] Spring Security configuration
-- [ ] Thymeleaf web interface
-- [ ] Data seeder with sample data
-- [ ] Full CRUD for all entities
+- [x] Domain entities with JPA relationships
+- [x] Repository and service layer
+- [x] REST API controllers
+- [x] Spring Security configuration
+- [x] Thymeleaf web interface
+- [x] Data seeder with sample data
+- [x] Full CRUD for all entities
 
 ---
 
