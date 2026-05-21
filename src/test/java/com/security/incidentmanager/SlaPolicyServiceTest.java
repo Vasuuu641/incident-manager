@@ -1,6 +1,8 @@
 package com.security.incidentmanager;
 
+import com.security.incidentmanager.domain.Incident;
 import com.security.incidentmanager.domain.SlaPolicy;
+import com.security.incidentmanager.repository.IncidentRepository;
 import com.security.incidentmanager.repository.SlaPolicyRepository;
 import com.security.incidentmanager.service.SlaPolicyService;
 import org.junit.jupiter.api.Test;
@@ -19,6 +21,9 @@ class SlaPolicyServiceTest {
 
     @Mock
     private SlaPolicyRepository slaPolicyRepository;
+
+    @Mock
+    private IncidentRepository incidentRepository;
 
     @InjectMocks
     private SlaPolicyService slaPolicyService;
@@ -100,8 +105,26 @@ class SlaPolicyServiceTest {
     }
 
     @Test
-    void delete_ShouldCallRepository() {
+    void delete_ShouldDeletePolicy_WhenNoIncidentsReferencing() {
+        when(incidentRepository.findBySlaPolicyId(1L))
+                .thenReturn(List.of());
+
         slaPolicyService.delete(1L);
+
         verify(slaPolicyRepository).deleteById(1L);
+    }
+
+    @Test
+    void delete_ShouldThrowException_WhenIncidentsStillReferencing() {
+        Incident incident = new Incident();
+        incident.setTitle("Active Incident");
+
+        when(incidentRepository.findBySlaPolicyId(1L))
+                .thenReturn(List.of(incident));
+
+        assertThrows(IllegalStateException.class,
+                () -> slaPolicyService.delete(1L));
+
+        verify(slaPolicyRepository, never()).deleteById(1L);
     }
 }
