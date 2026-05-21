@@ -7,11 +7,12 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h2 th:text="${incident.title}"></h2>
-            <span class="badge"
-                  th:classappend="${incident.status == 'OPEN'} ? 'badge-open' :
-                               (${incident.status == 'IN_PROGRESS'} ? 'badge-progress' :
-                               (${incident.status == 'RESOLVED'} ? 'badge-resolved' : 'badge-closed'))"
-                  th:text="${incident.status}">
+            <span th:text="${incident.status}"
+                  th:class="${incident.status == 'OPEN'} ? 'badge badge-open' :
+                (${incident.status == 'IN_PROGRESS'} ? 'badge badge-progress' :
+                (${incident.status == 'RESOLVED'} ? 'badge badge-resolved' :
+                (${incident.status == 'ESCALATED'} ? 'badge bg-danger' :
+                'badge badge-closed')))">
             </span>
         </div>
         <div class="d-flex gap-2">
@@ -41,6 +42,31 @@
                         </p>
                     </div>
                 </div>
+                <div class="col-md-6">
+                    <small class="text-secondary">SLA Policy</small>
+                    <p th:text="${incident.slaPolicy != null} ?
+                       ${incident.slaPolicy.severity} + ' — ' +
+                       ${incident.slaPolicy.resolutionHours} + ' hrs' :
+                       'No policy assigned'">
+                    </p>
+                </div>
+                <div class="col-md-6">
+                    <small class="text-secondary">SLA Deadline</small>
+                    <p th:if="${incident.slaDeadline != null}">
+                        <span th:text="${#temporals.format(incident.slaDeadline,
+                        'dd MMM yyyy HH:mm')}"></span>
+                        <span th:if="${incident.escalated}"
+                              class="badge bg-danger ms-1">
+                                Breached
+                        </span>
+                        <span th:if="${!incident.escalated}"
+                              class="badge bg-success ms-1">
+                                 Within SLA
+                         </span>
+                    </p>
+                    <p th:if="${incident.slaDeadline == null}"
+                       class="text-secondary">Not set</p>
+                </div>
                 <div th:if="${incident.tags != null and !incident.tags.isEmpty()}">
                     <small class="text-secondary">Tags</small>
                     <div class="mt-1">
@@ -51,8 +77,9 @@
                     </div>
                 </div>
             </div>
-            <div class="card p-4"
+            <div class="card p-4 mb-4"
                  th:if="${incident.report != null}">
+
                 <h5 class="mb-3">Incident Report</h5>
                 <div class="mb-3">
                     <small class="text-secondary">Severity</small>

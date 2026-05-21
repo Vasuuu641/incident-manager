@@ -50,6 +50,10 @@
                                 th:selected="${incident.status == 'CLOSED'}">
                             Closed
                         </option>
+                        <option value="ESCALATED"
+                                th:selected="${incident.status == 'ESCALATED'}">
+                            Escalated
+                        </option>
                     </select>
                 </div>
                 <div class="col-md-6 mb-3">
