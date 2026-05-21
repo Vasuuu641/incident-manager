@@ -23,6 +23,10 @@ public class Incident {
 
     private LocalDateTime detectedAt;
 
+    private LocalDateTime slaDeadline;
+
+    private boolean escalated = false;
+
     // OneToOne — each incident has one detailed report
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "report_id")
