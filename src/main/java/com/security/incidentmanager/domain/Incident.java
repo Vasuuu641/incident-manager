@@ -41,6 +41,11 @@ public class Incident {
     @lombok.ToString.Exclude
     private Analyst analyst;
 
+    // ManyToOne — many incidents governed by one SLA policy
+    @ManyToOne
+    @JoinColumn(name = "sla_policy_id")
+    private SlaPolicy slaPolicy;
+
     // OneToMany — one incident has many affected assets
     @OneToMany(mappedBy = "incident", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @lombok.EqualsAndHashCode.Exclude
