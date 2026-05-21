@@ -2,6 +2,7 @@ package com.security.incidentmanager;
 
 import com.security.incidentmanager.domain.*;
 import com.security.incidentmanager.repository.*;
+import com.security.incidentmanager.service.SlaPolicyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -16,9 +17,37 @@ public class DataSeeder implements CommandLineRunner {
     private final TagRepository tagRepository;
     private final IncidentRepository incidentRepository;
     private final AssetRepository assetRepository;
+    private final SlaPolicyService slaPolicyService;
 
     @Override
     public void run(String... args) {
+
+        // ===========================
+        // Create SLA Policies
+        // ===========================
+        SlaPolicy critical = new SlaPolicy();
+        critical.setSeverity("CRITICAL");
+        critical.setResolutionHours(4);
+        critical.setEscalationHours(2);
+        slaPolicyService.save(critical);
+
+        SlaPolicy high = new SlaPolicy();
+        high.setSeverity("HIGH");
+        high.setResolutionHours(24);
+        high.setEscalationHours(12);
+        slaPolicyService.save(high);
+
+        SlaPolicy medium = new SlaPolicy();
+        medium.setSeverity("MEDIUM");
+        medium.setResolutionHours(72);
+        medium.setEscalationHours(48);
+        slaPolicyService.save(medium);
+
+        SlaPolicy low = new SlaPolicy();
+        low.setSeverity("LOW");
+        low.setResolutionHours(168);
+        low.setEscalationHours(120);
+        slaPolicyService.save(low);
 
         // ===========================
         // Create Analysts
@@ -70,7 +99,7 @@ public class DataSeeder implements CommandLineRunner {
         tagRepository.save(sqlInjection);
 
         // ===========================
-        // Incident 1 — OPEN, CRITICAL
+        // Incident 1 — CRITICAL, already breached
         // ===========================
         IncidentReport report1 = new IncidentReport();
         report1.setFindings("Unusual outbound traffic detected on port 443 " +
@@ -89,6 +118,13 @@ public class DataSeeder implements CommandLineRunner {
         incident1.setAnalyst(alice);
         incident1.setReport(report1);
         incident1.setTags(Set.of(ddos, phishing));
+        incident1.setSlaPolicy(critical);
+        incident1.setSlaDeadline(
+                incident1.getDetectedAt()
+                        .plusHours(critical.getResolutionHours())
+                        .minusHours(8) // force breach for demo
+        );
+        incident1.setEscalated(false); // scheduler will pick this up
         incidentRepository.save(incident1);
 
         Asset asset1 = new Asset();
@@ -106,7 +142,7 @@ public class DataSeeder implements CommandLineRunner {
         assetRepository.save(asset2);
 
         // ===========================
-        // Incident 2 — IN_PROGRESS, HIGH
+        // Incident 2 — HIGH, approaching deadline
         // ===========================
         IncidentReport report2 = new IncidentReport();
         report2.setFindings("Multiple failed login attempts detected " +
@@ -125,6 +161,12 @@ public class DataSeeder implements CommandLineRunner {
         incident2.setAnalyst(bob);
         incident2.setReport(report2);
         incident2.setTags(Set.of(bruteForce));
+        incident2.setSlaPolicy(high);
+        incident2.setSlaDeadline(
+                incident2.getDetectedAt()
+                        .plusHours(high.getResolutionHours())
+        );
+        incident2.setEscalated(false);
         incidentRepository.save(incident2);
 
         Asset asset3 = new Asset();
@@ -135,7 +177,7 @@ public class DataSeeder implements CommandLineRunner {
         assetRepository.save(asset3);
 
         // ===========================
-        // Incident 3 — RESOLVED, MEDIUM
+        // Incident 3 — RESOLVED, within SLA
         // ===========================
         IncidentReport report3 = new IncidentReport();
         report3.setFindings("Phishing email campaign targeting HR department. " +
@@ -154,10 +196,16 @@ public class DataSeeder implements CommandLineRunner {
         incident3.setAnalyst(carol);
         incident3.setReport(report3);
         incident3.setTags(Set.of(phishing));
+        incident3.setSlaPolicy(medium);
+        incident3.setSlaDeadline(
+                incident3.getDetectedAt()
+                        .plusHours(medium.getResolutionHours())
+        );
+        incident3.setEscalated(false);
         incidentRepository.save(incident3);
 
         // ===========================
-        // Incident 4 — OPEN, no analyst
+        // Incident 4 — OPEN, fresh, no analyst
         // ===========================
         Incident incident4 = new Incident();
         incident4.setTitle("SQL injection attempt on customer portal");
@@ -166,9 +214,15 @@ public class DataSeeder implements CommandLineRunner {
         incident4.setStatus("OPEN");
         incident4.setDetectedAt(LocalDateTime.now().minusHours(1));
         incident4.setTags(Set.of(sqlInjection));
+        incident4.setSlaPolicy(low);
+        incident4.setSlaDeadline(
+                incident4.getDetectedAt()
+                        .plusHours(low.getResolutionHours())
+        );
+        incident4.setEscalated(false);
         incidentRepository.save(incident4);
 
         System.out.println("✅ Data seeder completed — " +
-                "3 analysts, 5 tags, 4 incidents loaded.");
+                "4 SLA policies, 3 analysts, 5 tags, 4 incidents loaded.");
     }
 }
