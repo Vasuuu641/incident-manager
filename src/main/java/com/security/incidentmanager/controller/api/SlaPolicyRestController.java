@@ -41,7 +41,12 @@ public class SlaPolicyRestController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        slaPolicyService.delete(id);
-        return ResponseEntity.noContent().build();
+        try {
+            slaPolicyService.delete(id);
+            return ResponseEntity.noContent().build();
+        } catch (IllegalStateException ex) {
+            // cannot delete due to existing references
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
     }
 }

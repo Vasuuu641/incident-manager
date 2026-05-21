@@ -4,6 +4,7 @@
 <body>
 <nav th:replace="~{layout :: navbar}"></nav>
 <div class="container mt-4">
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h2>SLA Policies</h2>

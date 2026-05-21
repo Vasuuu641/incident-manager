@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/sla-policies")
@@ -47,8 +48,14 @@ public class SlaPolicyWebController {
     }
 
     @PostMapping("/{id}/delete")
-    public String delete(@PathVariable Long id) {
-        slaPolicyService.delete(id);
+    public String delete(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            slaPolicyService.delete(id);
+        } catch (IllegalStateException ex) {
+            // add an error message and redirect back to the list page
+            redirectAttributes.addFlashAttribute("error", ex.getMessage());
+            return "redirect:/sla-policies";
+        }
         return "redirect:/sla-policies";
     }
 }
