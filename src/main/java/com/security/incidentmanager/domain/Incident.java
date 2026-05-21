@@ -23,6 +23,10 @@ public class Incident {
 
     private LocalDateTime detectedAt;
 
+    private LocalDateTime slaDeadline;
+
+    private boolean escalated = false;
+
     // OneToOne — each incident has one detailed report
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "report_id")
@@ -36,6 +40,11 @@ public class Incident {
     @lombok.EqualsAndHashCode.Exclude
     @lombok.ToString.Exclude
     private Analyst analyst;
+
+    // ManyToOne — many incidents governed by one SLA policy
+    @ManyToOne
+    @JoinColumn(name = "sla_policy_id")
+    private SlaPolicy slaPolicy;
 
     // OneToMany — one incident has many affected assets
     @OneToMany(mappedBy = "incident", cascade = CascadeType.ALL, fetch = FetchType.EAGER)

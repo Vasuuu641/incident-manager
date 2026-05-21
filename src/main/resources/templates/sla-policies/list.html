@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head}"></head>
+<body>
+<nav th:replace="~{layout :: navbar}"></nav>
+<div class="container mt-4">
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2>SLA Policies</h2>
+            <p class="text-secondary">
+                Response time requirements by incident severity
+            </p>
+        </div>
+        <a href="/sla-policies/new" class="btn btn-danger">
+            + New Policy
+        </a>
+    </div>
+    <div class="card">
+        <div class="card-body p-0">
+            <table class="table table-dark table-hover mb-0">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Severity</th>
+                    <th>Resolution (hours)</th>
+                    <th>Escalation (hours)</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${#lists.isEmpty(policies)}">
+                    <td colspan="5"
+                        class="text-center text-secondary py-4">
+                        No SLA policies defined yet.
+                    </td>
+                </tr>
+                <tr th:each="policy : ${policies}">
+                    <td th:text="${policy.id}"></td>
+                    <td>
+                            <span class="badge"
+                                  th:class="${policy.severity == 'CRITICAL'} ? 'badge bg-danger' :
+                                          (${policy.severity == 'HIGH'} ? 'badge badge-open' :
+                                          (${policy.severity == 'MEDIUM'} ? 'badge badge-progress' :
+                                          'badge bg-secondary'))"
+                                  th:text="${policy.severity}">
+                            </span>
+                    </td>
+                    <td th:text="${policy.resolutionHours} + ' hrs'"></td>
+                    <td th:text="${policy.escalationHours} + ' hrs'"></td>
+                    <td>
+                        <a th:href="@{/sla-policies/{id}/edit(id=${policy.id})}"
+                           class="btn btn-sm btn-outline-warning me-1">
+                            Edit
+                        </a>
+                        <form th:action="@{/sla-policies/{id}/delete(id=${policy.id})}"
+                              method="post" style="display:inline"
+                              onsubmit="return confirm('Delete this policy?')">
+                            <button class="btn btn-sm btn-outline-danger">
+                                Delete
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -26,6 +26,7 @@ public class SecurityConfig {
                         .requestMatchers("/incidents/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/analysts/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/tags/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/sla-policies/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/", "/home", "/css/**", "/login").permitAll()
                         .anyRequest().authenticated()
                 )
