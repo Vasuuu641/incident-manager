@@ -1,6 +1,7 @@
 package com.security.incidentmanager.controller.web;
 
 import com.security.incidentmanager.domain.Incident;
+import com.security.incidentmanager.domain.IncidentReport;
 import com.security.incidentmanager.service.AnalystService;
 import com.security.incidentmanager.service.IncidentService;
 import com.security.incidentmanager.service.TagService;
@@ -36,8 +37,8 @@ public class IncidentWebController {
     @PostMapping
     public String create(@ModelAttribute Incident incident) {
         incident.setDetectedAt(LocalDateTime.now());
-        if (incident.getReport() != null) {
-            incident.getReport().setCreatedAt(LocalDateTime.now());
+        if (incident.getDetectedAt() == null) {
+            incident.setDetectedAt(LocalDateTime.now());
         }
         incidentService.save(incident);
         return "redirect:/incidents";
@@ -55,6 +56,23 @@ public class IncidentWebController {
         model.addAttribute("analysts", analystService.findAll());
         model.addAttribute("tags", tagService.findAll());
         return "incidents/form";
+    }
+
+    @GetMapping("/{id}/report/new")
+    public String newReportForm(@PathVariable Long id, Model model) {
+        model.addAttribute("incident", incidentService.findById(id));
+        model.addAttribute("report", new IncidentReport());
+        return "incidents/report-form";
+    }
+
+    @PostMapping("/{id}/report")
+    public String createReport(@PathVariable Long id,
+                               @ModelAttribute IncidentReport report) {
+        Incident incident = incidentService.findById(id);
+        report.setCreatedAt(LocalDateTime.now());
+        incident.setReport(report);
+        incidentService.save(incident);
+        return "redirect:/incidents/" + id;
     }
 
     @PostMapping("/{id}")
