@@ -1,8 +1,8 @@
 # 🛡️ Security Incident Management System
 
 A Spring Boot 3.x web application for tracking and managing cybersecurity
-incidents, assigning them to analysts, categorizing by attack type, and
-linking to affected assets.
+incidents, assigning them to analysts, categorizing by attack type, linking
+to affected assets, and enforcing SLA-based escalation policies.
 
 Built as a Programming 4 assessment project at the University of Pécs,
 Faculty of Engineering and Information Technology.
@@ -40,6 +40,33 @@ Available at `http://localhost:8080/h2-console`
 
 ---
 
+## 🐳 Running with Docker
+
+### Prerequisites
+- Docker installed and running
+
+### Build and Run
+```bash
+# Build the Docker image
+docker build -t incident-manager .
+
+# Run the container
+docker run -p 8080:8080 incident-manager
+```
+
+Open `http://localhost:8080` in your browser. Same credentials apply.
+
+### Stop the Container
+```bash
+# List running containers
+docker ps
+
+# Stop by container ID
+docker stop <container_id>
+```
+
+---
+
 ## ✨ Features
 
 - **Incident tracking** — create, view, edit, and delete security incidents
@@ -47,8 +74,9 @@ Available at `http://localhost:8080/h2-console`
 - **Tag categorization** — label incidents by attack type (DDoS, Phishing, Ransomware)
 - **Detailed reports** — attach findings and recommendations to each incident
 - **Asset tracking** — link affected systems and devices to incidents
+- **SLA enforcement** — assign response time policies per severity level with automatic escalation
 - **Role-based access** — analysts access the web UI, admins access the REST API
-- **Sample data** — pre-seeded incidents, analysts, and tags on startup
+- **Sample data** — pre-seeded incidents, analysts, tags, and SLA policies on startup
 
 ---
 
@@ -61,13 +89,37 @@ Available at `http://localhost:8080/h2-console`
 | OneToOne | Incident → IncidentReport | Each incident has one detailed report |
 | ManyToOne | Incident → Analyst | Many incidents assigned to one analyst |
 | OneToMany | Analyst → Incidents | One analyst handles many incidents |
+| ManyToOne | Incident → SlaPolicy | Many incidents governed by one SLA policy |
+| OneToMany | SlaPolicy → Incidents | One policy applies to many incidents |
+| OneToMany | Incident → Assets | One incident has many affected assets |
 | ManyToMany | Incident ↔ Tag | Incidents share tags with other incidents |
+
+---
+
+## ⏱️ SLA Escalation System
+
+Each incident is assigned an SLA policy based on severity. The policy defines:
+- **Resolution hours** — maximum time to resolve before SLA breach
+- **Escalation hours** — time before automatic escalation
+
+A scheduled job runs every 60 seconds checking all active incidents.
+If the current time exceeds the SLA deadline, the incident is automatically
+escalated — status changes to `ESCALATED` and a red badge appears on the
+incident list.
+
+| Severity | Resolution | Escalation |
+|---|---|---|
+| CRITICAL | 4 hrs | 2 hrs |
+| HIGH | 24 hrs | 12 hrs |
+| MEDIUM | 72 hrs | 48 hrs |
+| LOW | 168 hrs | 120 hrs |
 
 ---
 
 ## 🌐 REST API
 
 All entities are accessible via REST endpoints returning JSON.
+REST API requires ADMIN role — use Basic Auth with `admin` / `admin`.
 
 ### Incidents
 | Method | Endpoint | Description |
@@ -105,15 +157,40 @@ All entities are accessible via REST endpoints returning JSON.
 | PUT | `/api/assets/{id}` | Update asset |
 | DELETE | `/api/assets/{id}` | Delete asset |
 
+### SLA Policies
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/api/sla-policies` | Get all SLA policies |
+| GET | `/api/sla-policies/{id}` | Get policy by ID |
+| POST | `/api/sla-policies` | Create new policy |
+| PUT | `/api/sla-policies/{id}` | Update policy |
+| DELETE | `/api/sla-policies/{id}` | Delete policy (fails if incidents reference it) |
+
 ---
 
 ## 🔐 Security
 
-- Spring Security with form-based login
+- Spring Security with form-based login and HTTP Basic Auth
 - Role-based access control — USER and ADMIN roles
 - REST API restricted to ADMIN role
 - Web UI accessible to USER and ADMIN roles
 - Passwords encoded with BCrypt
+- CSRF protection enabled for web UI, disabled for REST API
+
+---
+
+## 🧪 Tests
+
+Unit tests written with JUnit 5, Mockito, and AssertJ covering:
+- `IncidentServiceTest` — 7 tests including analyst resolution and null handling
+- `AnalystServiceTest` — 6 tests including specialization filtering
+- `SlaPolicyServiceTest` — 8 tests including defensive delete logic
+- `IncidentManagerApplicationTests` — integration test verifying context loads
+
+```bash
+# Run all tests
+./mvnw test
+```
 
 ---
 
@@ -128,6 +205,8 @@ All entities are accessible via REST endpoints returning JSON.
 | Templates | Thymeleaf + Bootstrap 5 |
 | Security | Spring Security |
 | Build | Maven |
+| Containerization | Docker |
+| Testing | JUnit 5, Mockito, AssertJ |
 
 ---
 
@@ -136,28 +215,42 @@ All entities are accessible via REST endpoints returning JSON.
 ```
 src/main/java/com/security/incidentmanager/
 ├── domain/                  # JPA entities
-│   ├── Incident.java
-│   ├── IncidentReport.java
-│   ├── Analyst.java
-│   ├── Asset.java
-│   └── Tag.java
+│   ├── Incident.java        # Central entity — all four relationships
+│   ├── IncidentReport.java  # OneToOne with Incident
+│   ├── Analyst.java         # ManyToOne from Incident
+│   ├── Asset.java           # OneToMany from Incident
+│   ├── Tag.java             # ManyToMany with Incident
+│   └── SlaPolicy.java       # ManyToOne from Incident
 ├── repository/              # Spring Data JPA repositories
 ├── service/                 # Business logic layer
 ├── controller/
-│   ├── api/                 # REST controllers
+│   ├── api/                 # REST controllers (JSON)
 │   └── web/                 # Thymeleaf web controllers
 ├── config/                  # Spring Security configuration
-└── DataSeeder.java          # Sample data on startup
+├── DataSeeder.java          # Sample data on startup
+└── SlaScheduler.java        # SLA breach detection — runs every 60s
 
 src/main/resources/
 ├── templates/               # Thymeleaf HTML templates
-│   ├── layout.html
-│   ├── home.html
-│   ├── login.html
-│   ├── incidents/
-│   ├── analysts/
-│   └── tags/
+│   ├── layout.html          # Shared navbar and head fragments
+│   ├── home.html            # Dashboard with incident counts
+│   ├── login.html           # Custom login form
+│   ├── incidents/           # List, form, view
+│   ├── analysts/            # List, form
+│   ├── tags/                # List, form
+│   ├── reports/             # List, form
+│   ├── sla-policies/        # List, form
+│   └── assets/              # Add asset form
 └── application.properties
+
+src/test/java/com/security/incidentmanager/
+├── service/                 # Unit tests with Mockito
+│   ├── IncidentServiceTest.java
+│   ├── AnalystServiceTest.java
+│   └── SlaPolicyServiceTest.java
+└── IncidentManagerApplicationTests.java  # Integration test
+
+Dockerfile                   # Multi-stage build
 ```
 
 ---
@@ -165,13 +258,15 @@ src/main/resources/
 ## 🚀 Project Status
 
 - [x] Project setup and configuration
-- [x] Domain entities with JPA relationships
+- [x] Domain entities with all four JPA relationships
 - [x] Repository and service layer
-- [x] REST API controllers
-- [x] Spring Security configuration
-- [x] Thymeleaf web interface
+- [x] REST API controllers for all entities
+- [x] Spring Security with role-based access control
+- [x] Thymeleaf web interface with full CRUD
 - [x] Data seeder with sample data
-- [x] Full CRUD for all entities
+- [x] SLA policies with automatic escalation scheduler
+- [x] Unit tests with Mockito
+- [x] Docker containerization
 
 ---
 
@@ -180,6 +275,3 @@ src/main/resources/
 **Vasundhara Ravikumar**
 Computer Science Engineering — University of Pécs, Hungary
 [GitHub](https://github.com/Vasuuu641) · [LinkedIn](https://www.linkedin.com/in/vasundhararavikumar/)
-
-
-- Outdated version - need to add stuff about sla policies
