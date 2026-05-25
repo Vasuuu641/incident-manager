@@ -77,29 +77,41 @@
                     </div>
                 </div>
             </div>
+            <!-- shows when report EXISTS -->
             <div class="card p-4 mb-4"
                  th:if="${incident.report != null}">
-
                 <h5 class="mb-3">Incident Report</h5>
-                <div class="mb-3">
+                <div class="mb-4">
                     <small class="text-secondary">Severity</small>
                     <p>
                         <span class="badge"
                               th:classappend="${incident.report.severity == 'CRITICAL'} ? 'bg-danger' :
                                            (${incident.report.severity == 'HIGH'} ? 'badge-open' :
-                                           (${incident.report.severity == 'MEDIUM'} ? 'badge-progress' : 'bg-secondary'))"
+                                           (${incident.report.severity == 'MEDIUM'} ? 'badge-progress' :
+                                           'bg-secondary'))"
                               th:text="${incident.report.severity}">
                         </span>
                     </p>
                 </div>
-                <div class="mb-3">
+                <div class="mb-4">
                     <small class="text-secondary">Findings</small>
                     <p th:text="${incident.report.findings}"></p>
                 </div>
-                <div>
+                <div class="mb-4">
                     <small class="text-secondary">Recommendations</small>
                     <p th:text="${incident.report.recommendations}"></p>
                 </div>
+            </div>
+
+            <!-- shows when report DOES NOT exist -->
+            <div class="card p-4 mb-4"
+                 th:if="${incident.report == null}">
+                <h5 class="mb-3">Incident Report</h5>
+                <p class="text-secondary">No report attached yet.</p>
+                <a th:href="@{/incidents/{id}/report/new(id=${incident.id})}"
+                   class="btn btn-outline-danger">
+                    + Add Report
+                </a>
             </div>
         </div>
         <div class="col-md-4">
