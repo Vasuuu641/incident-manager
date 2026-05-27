@@ -4,27 +4,22 @@ import com.security.incidentmanager.domain.Analyst;
 import com.security.incidentmanager.repository.AnalystRepository;
 import com.security.incidentmanager.domain.Incident;
 import com.security.incidentmanager.repository.IncidentRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
-public class IncidentService {
+public class IncidentService
+        extends AbstractCrudService<Incident, IncidentRepository>{
 
-    // Import from repository
-    private final IncidentRepository incidentRepository;
     private final AnalystRepository analystRepository;
 
-    public List<Incident> findAll() {
-        return incidentRepository.findAll();
+    public IncidentService(IncidentRepository repository,
+                           AnalystRepository analystRepository) {
+        super(repository);
+        this.analystRepository = analystRepository;
     }
 
-    public Incident findById(Long id) {
-        return incidentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Incident not found"));
-    }
-
+    @Override
     public Incident save(Incident incident) {
         if (incident.getAnalyst() != null
                 && incident.getAnalyst().getId() != null) {
@@ -35,19 +30,11 @@ public class IncidentService {
         } else {
             incident.setAnalyst(null);
         }
-        return incidentRepository.save(incident);
-    }
-
-
-    public void delete(Long id) {
-        incidentRepository.deleteById(id);
+        return repository.save(incident);
     }
 
     public List<Incident> findByStatus(String status) {
-        return incidentRepository.findByStatus(status);
+        return repository.findByStatus(status);
     }
 
-    public List<Incident> findByAnalystId(Long analystId) {
-        return incidentRepository.findByAnalystId(analystId);
-    }
 }
