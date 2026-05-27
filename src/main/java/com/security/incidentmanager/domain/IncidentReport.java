@@ -2,15 +2,14 @@ package com.security.incidentmanager.domain;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 import java.time.LocalDateTime;
 
 @Entity
 @Data
-public class IncidentReport {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+@EqualsAndHashCode(callSuper = true)
+public class IncidentReport extends BaseEntity{
 
     @Column(length = 5000)
     private String findings;
