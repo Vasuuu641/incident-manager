@@ -2,14 +2,12 @@ package com.security.incidentmanager.domain;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Entity
 @Data
-public class Asset {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+@EqualsAndHashCode(callSuper = true)
+public class Asset extends BaseEntity {
 
     private String hostname;
     private String ipAddress;

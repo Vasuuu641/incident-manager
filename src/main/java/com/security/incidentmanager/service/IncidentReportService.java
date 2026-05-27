@@ -2,29 +2,18 @@ package com.security.incidentmanager.service;
 
 import com.security.incidentmanager.domain.IncidentReport;
 import com.security.incidentmanager.repository.IncidentReportRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
-public class IncidentReportService {
-    private final IncidentReportRepository incidentReportRepository;
+public class IncidentReportService
+        extends AbstractCrudService<IncidentReport, IncidentReportRepository> {
 
-    public List<IncidentReport> findAll() {
-        return incidentReportRepository.findAll();
+    public IncidentReportService(IncidentReportRepository repository) {
+        super(repository);
     }
 
-    public IncidentReport save(IncidentReport incidentReport) {
-        return incidentReportRepository.save(incidentReport);
+    public List<IncidentReport> findBySeverity(String severity) {
+        return repository.findBySeverity(severity);
     }
-
-    public IncidentReport findById(Long id) {
-        return incidentReportRepository.findById(id).orElseThrow(() -> new RuntimeException("Incident not found"));
-    }
-
-    public void delete(Long id) {
-        incidentReportRepository.deleteById(id);
-    }
-
 }
