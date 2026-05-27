@@ -37,4 +37,7 @@ public class IncidentService
         return repository.findByStatus(status);
     }
 
+    public List<Incident> findByAnalystId(Long analystId) {
+        return repository.findByAnalystId(analystId);
+    }
 }

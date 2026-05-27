@@ -12,4 +12,14 @@ public class AssetService
     public AssetService(AssetRepository repository) {
         super(repository);
     }
+
+    //find by asset type
+    public List<Asset> findByAssetType(String assetType) {
+        return repository.findByAssetType(assetType);
+    }
+
+    //find by incident id
+    public List<Asset> findByIncidentId(Long incidentId) {
+        return repository.findByIncidentId(incidentId);
+    }
 }

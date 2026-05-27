@@ -3,7 +3,7 @@ package com.security.incidentmanager.service;
 import com.security.incidentmanager.domain.Tag;
 import com.security.incidentmanager.repository.TagRepository;
 import org.springframework.stereotype.Service;
-import java.util.List;
+
 import java.util.Optional;
 
 @Service
@@ -12,5 +12,10 @@ public class TagService
 
     public TagService(TagRepository repository) {
         super(repository);
+    }
+
+    public Optional<Tag> findByName(String name) {
+        repository.findByName(name);
+        return repository.findByName(name);
     }
 }
