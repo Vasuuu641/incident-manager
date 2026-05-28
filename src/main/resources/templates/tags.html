@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head}"></head>
+<body>
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+<div class="container mt-4">
+
+    <!-- LIST VIEW -->
+    <div th:if="${view == 'list'}">
+        <div th:replace="~{fragments/page-header :: header(
+            title='Tags',
+            subtitle='Attack type categories for incidents',
+            buttonText='+ New Tag',
+            buttonUrl='/tags/new')}">
+        </div>
+
+        <div class="card">
+            <div class="card-body p-0">
+                <table class="table table-dark table-hover mb-0">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Color</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${#lists.isEmpty(tags)}">
+                        <td colspan="4"
+                            class="text-center text-secondary py-4">
+                            No tags created yet.
+                        </td>
+                    </tr>
+                    <tr th:each="tag : ${tags}">
+                        <td th:text="${tag.id}"></td>
+                        <td>
+                                <span class="badge"
+                                      th:style="'background-color:' + ${tag.color}"
+                                      th:text="${tag.name}">
+                                </span>
+                        </td>
+                        <td th:text="${tag.color}"></td>
+                        <td>
+                            <a th:href="@{/tags/{id}/edit(id=${tag.id})}"
+                               class="btn btn-sm btn-outline-warning me-1">
+                                Edit
+                            </a>
+                            <form th:action="@{/tags/{id}/delete(id=${tag.id})}"
+                                  method="post" style="display:inline"
+                                  onsubmit="return confirm('Delete this tag?')">
+                                <button class="btn btn-sm btn-outline-danger">
+                                    Delete
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- FORM VIEW -->
+    <div th:if="${view == 'form'}">
+        <div th:replace="~{fragments/form-wrapper :: formTitle(
+            title=${tag.id == null} ? 'New Tag' : 'Edit Tag',
+            subtitle='Create a category label for incident classification')}">
+        </div>
+
+        <div class="card p-4" style="max-width: 500px">
+            <form th:action="${tag.id == null} ? @{/tags} :
+                  @{/tags/{id}(id=${tag.id})}" method="post">
+                <div class="mb-3">
+                    <label class="form-label">Tag Name *</label>
+                    <input type="text" name="name"
+                           class="form-control"
+                           th:value="${tag.name}"
+                           placeholder="e.g. Ransomware, DDoS, Phishing"
+                           required>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label">Color</label>
+                    <div class="d-flex gap-2 align-items-center">
+                        <input type="color" name="color"
+                               class="form-control form-control-color"
+                               th:value="${tag.color} ?: '#6e7681'"
+                               style="width: 60px; height: 38px">
+                        <small class="text-secondary">
+                            Choose a color for this tag badge
+                        </small>
+                    </div>
+                </div>
+
+                <div th:replace="~{fragments/form-buttons :: formButtons(
+                    cancelUrl='/tags')}">
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

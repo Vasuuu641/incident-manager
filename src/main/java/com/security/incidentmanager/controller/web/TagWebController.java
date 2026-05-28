@@ -17,13 +17,13 @@ public class TagWebController {
     @GetMapping
     public String list(Model model) {
         model.addAttribute("tags", tagService.findAll());
-        return "tags/list";
+        return "tags";
     }
 
     @GetMapping("/new")
     public String newForm(Model model) {
         model.addAttribute("tag", new Tag());
-        return "tags/form";
+        return "tags";
     }
 
     @PostMapping
@@ -35,7 +35,7 @@ public class TagWebController {
     @GetMapping("/{id}/edit")
     public String editForm(@PathVariable Long id, Model model) {
         model.addAttribute("tag", tagService.findById(id));
-        return "tags/form";
+        return "tags";
     }
 
     @PostMapping("/{id}")
