@@ -18,13 +18,13 @@ public class SlaPolicyWebController {
     @GetMapping
     public String list(Model model) {
         model.addAttribute("policies", slaPolicyService.findAll());
-        return "sla-policies/list";
+        return "sla-policies";
     }
 
     @GetMapping("/new")
     public String newForm(Model model) {
         model.addAttribute("policy", new SlaPolicy());
-        return "sla-policies/form";
+        return "sla-policies";
     }
 
     @PostMapping
@@ -36,7 +36,7 @@ public class SlaPolicyWebController {
     @GetMapping("/{id}/edit")
     public String editForm(@PathVariable Long id, Model model) {
         model.addAttribute("policy", slaPolicyService.findById(id));
-        return "sla-policies/form";
+        return "sla-policies";
     }
 
     @PostMapping("/{id}")
