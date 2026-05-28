@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head}"></head>
+<body>
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+<div class="container mt-4">
+
+    <!-- LIST VIEW -->
+    <div th:if="${view == 'list'}">
+        <div th:replace="~{fragments/page-header :: header(
+            title='Incident Reports',
+            subtitle='Detailed findings and recommendations',
+            buttonText='+ New Report',
+            buttonUrl='/reports/new')}">
+        </div>
+
+        <div class="card">
+            <div class="card-body p-0">
+                <table class="table table-dark table-hover mb-0">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Severity</th>
+                        <th>Findings</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${#lists.isEmpty(reports)}">
+                        <td colspan="5"
+                            class="text-center text-secondary py-4">
+                            No reports created yet.
+                        </td>
+                    </tr>
+                    <tr th:each="report : ${reports}">
+                        <td th:text="${report.id}"></td>
+                        <td>
+                                <span class="badge"
+                                      th:class="${report.severity == 'CRITICAL'} ? 'badge bg-danger' :
+                                              (${report.severity == 'HIGH'} ? 'badge badge-open' :
+                                              (${report.severity == 'MEDIUM'} ? 'badge badge-progress' :
+                                              'badge bg-secondary'))"
+                                      th:text="${report.severity}">
+                                </span>
+                        </td>
+                        <td th:text="${#strings.abbreviate(report.findings, 60)}"></td>
+                        <td th:text="${report.createdAt != null} ?
+                                ${#temporals.format(report.createdAt,
+                                'dd MMM yyyy')} : '-'">
+                        </td>
+                        <td>
+                            <a th:href="@{/reports/{id}/edit(id=${report.id})}"
+                               class="btn btn-sm btn-outline-warning me-1">
+                                Edit
+                            </a>
+                            <form th:action="@{/reports/{id}/delete(id=${report.id})}"
+                                  method="post" style="display:inline"
+                                  onsubmit="return confirm('Delete this report?')">
+                                <button class="btn btn-sm btn-outline-danger">
+                                    Delete
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- FORM VIEW -->
+    <div th:if="${view == 'form'}">
+        <div th:replace="~{fragments/form-wrapper :: formTitle(
+            title=${report.id == null} ? 'New Report' : 'Edit Report',
+            subtitle='Document findings and recommendations')}">
+        </div>
+
+        <div class="card p-4">
+            <form th:action="${report.id == null} ? @{/reports} :
+                  @{/reports/{id}(id=${report.id})}" method="post">
+                <div class="mb-3">
+                    <label class="form-label">Severity *</label>
+                    <select name="severity" class="form-select" required>
+                        <option value="">Select severity</option>
+                        <option value="LOW"
+                                th:selected="${report.severity == 'LOW'}">Low</option>
+                        <option value="MEDIUM"
+                                th:selected="${report.severity == 'MEDIUM'}">Medium</option>
+                        <option value="HIGH"
+                                th:selected="${report.severity == 'HIGH'}">High</option>
+                        <option value="CRITICAL"
+                                th:selected="${report.severity == 'CRITICAL'}">Critical</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Findings *</label>
+                    <textarea name="findings"
+                              class="form-control" rows="4"
+                              placeholder="What was discovered?"
+                              th:text="${report.findings}" required>
+                    </textarea>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label">Recommendations</label>
+                    <textarea name="recommendations"
+                              class="form-control" rows="4"
+                              placeholder="What actions should be taken?"
+                              th:text="${report.recommendations}">
+                    </textarea>
+                </div>
+
+                <div th:replace="~{fragments/form-buttons :: formButtons(
+                    cancelUrl='/reports')}">
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

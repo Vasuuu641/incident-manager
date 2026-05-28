@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head}"></head>
+<body>
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+<div class="container mt-4">
+
+    <div th:if="${view == 'form'}">
+        <div th:replace="~{fragments/form-wrapper :: formTitle(
+            title='Add Affected Asset',
+            subtitle=${incident.title})}">
+        </div>
+
+        <div class="card p-4" style="max-width: 500px">
+            <form th:action="@{/assets}" method="post">
+                <input type="hidden" name="incidentId"
+                       th:value="${incident.id}">
+                <div class="mb-3">
+                    <label class="form-label">Hostname</label>
+                    <input type="text" name="hostname"
+                           class="form-control"
+                           placeholder="e.g. web-server-01">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">IP Address</label>
+                    <input type="text" name="ipAddress"
+                           class="form-control"
+                           placeholder="e.g. 192.168.1.100">
+                </div>
+                <div class="mb-4">
+                    <label class="form-label">Asset Type</label>
+                    <select name="assetType" class="form-select">
+                        <option value="">Select type</option>
+                        <option value="SERVER">Server</option>
+                        <option value="WORKSTATION">Workstation</option>
+                        <option value="NETWORK_DEVICE">Network Device</option>
+                        <option value="DATABASE">Database</option>
+                    </select>
+                </div>
+
+                <div th:replace="~{fragments/form-buttons :: formButtons(
+                    cancelUrl='/incidents/' + ${incident.id})}">
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

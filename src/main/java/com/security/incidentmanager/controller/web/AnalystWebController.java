@@ -17,13 +17,13 @@ public class AnalystWebController {
     @GetMapping
     public String list(Model model) {
         model.addAttribute("analysts", analystService.findAll());
-        return "analysts/list";
+        return "analysts";
     }
 
     @GetMapping("/new")
     public String newForm(Model model) {
         model.addAttribute("analyst", new Analyst());
-        return "analysts/form";
+        return "analysts";
     }
 
     @PostMapping
@@ -35,7 +35,7 @@ public class AnalystWebController {
     @GetMapping("/{id}/edit")
     public String editForm(@PathVariable Long id, Model model) {
         model.addAttribute("analyst", analystService.findById(id));
-        return "analysts/form";
+        return "analysts";
     }
 
     @PostMapping("/{id}")

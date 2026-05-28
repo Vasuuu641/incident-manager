@@ -17,13 +17,13 @@ public class IncidentReportWebController {
     @GetMapping
     public String list(Model model) {
         model.addAttribute("reports", incidentReportService.findAll());
-        return "reports/list";
+        return "reports";
     }
 
     @GetMapping("/new")
     public String newForm(Model model) {
         model.addAttribute("report", new IncidentReport());
-        return "reports/form";
+        return "reports";
     }
 
     @PostMapping
@@ -35,7 +35,7 @@ public class IncidentReportWebController {
     @GetMapping("/{id}/edit")
     public String editForm(@PathVariable Long id, Model model) {
         model.addAttribute("report", incidentReportService.findById(id));
-        return "reports/form";
+        return "reports";
     }
 
     @PostMapping("/{id}")

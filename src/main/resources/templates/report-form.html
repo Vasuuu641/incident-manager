@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head}"></head>
+<body>
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+<div class="container mt-4">
+
+    <div th:replace="~{fragments/form-wrapper :: formTitle(
+        title='Add Report',
+        subtitle=${'Creating report for: ' + incident.title})}">
+    </div>
+
+    <div class="card p-4">
+        <form th:action="@{/incidents/{id}/report(id=${incident.id})}"
+              method="post">
+            <div class="mb-3">
+                <label class="form-label">Severity *</label>
+                <select name="severity" class="form-select" required>
+                    <option value="">Select severity</option>
+                    <option value="LOW">Low</option>
+                    <option value="MEDIUM">Medium</option>
+                    <option value="HIGH">High</option>
+                    <option value="CRITICAL">Critical</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Findings *</label>
+                <textarea name="findings"
+                          class="form-control" rows="4"
+                          placeholder="What was discovered?"
+                          required>
+                </textarea>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Recommendations</label>
+                <textarea name="recommendations"
+                          class="form-control" rows="4"
+                          placeholder="What actions should be taken?">
+                </textarea>
+            </div>
+
+            <div th:replace="~{fragments/form-buttons :: formButtons(
+                cancelUrl='/incidents/' + ${incident.id})}">
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head}"></head>
+<body class="bg-dark">
+<div class="container d-flex justify-content-center mt-5">
+    <div class="card" style="width:400px">
+        <div class="card-body p-4">
+            <h4 class="text-center mb-4">🛡️ Incident Manager</h4>
+            <div th:if="${param.error}"
+                 class="alert alert-danger">
+                Invalid credentials
+            </div>
+            <div th:if="${param.logout}"
+                 class="alert alert-success">
+                You have been logged out.
+            </div>
+            <form th:action="@{/login}" method="post">
+                <div class="mb-3">
+                    <label class="form-label">Username</label>
+                    <input type="text" name="username"
+                           class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Password</label>
+                    <input type="password" name="password"
+                           class="form-control" required>
+                </div>
+                <button class="btn btn-danger w-100">Login</button>
+            </form>
+            <p class="text-center mt-3 small text-secondary">
+                analyst / password &nbsp;·&nbsp; admin / admin
+            </p>
+        </div>
+    </div>
+</div>
+</body>
+</html>
