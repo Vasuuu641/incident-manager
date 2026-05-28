@@ -59,7 +59,7 @@
     <!-- FORM VIEW -->
     <div th:if="${view == 'form'}">
         <div th:replace="~{fragments/form-wrapper :: formTitle(
-        title=${analyst.id == null ? 'New Analyst' : 'Edit Analyst'},
+        title=${formTitle},
         subtitle='Analyst account details')}">
         </div>
 

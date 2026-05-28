@@ -25,6 +25,7 @@ public class AnalystWebController {
     public String newForm(Model model) {
         model.addAttribute("analyst", new Analyst());
         model.addAttribute("view", "form");
+        model.addAttribute("formTitle", "New Analyst");
         return "analysts";
     }
 
@@ -38,6 +39,7 @@ public class AnalystWebController {
     public String editForm(@PathVariable Long id, Model model) {
         model.addAttribute("analyst", analystService.findById(id));
         model.addAttribute("view", "form");
+        model.addAttribute("formTitle", "Edit Analyst");
         return "analysts";
     }
 
