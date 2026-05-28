@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head}"></head>
+<body>
+
+<div th:fragment="formButtons(cancelUrl)" class="d-flex gap-2">
+    <button type="submit" class="btn btn-danger">Save</button>
+    <a th:href="${cancelUrl}"
+       class="btn btn-outline-secondary">
+        Cancel
+    </a>
+</div>
+
+</body>
+</html>

@@ -27,7 +27,7 @@ public class SecurityConfig {
                         .requestMatchers("/analysts/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/tags/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/sla-policies/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/", "/home", "/css/**", "/login").permitAll()
+                        .requestMatchers("/css/**", "/login").permitAll()
                         .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults())
