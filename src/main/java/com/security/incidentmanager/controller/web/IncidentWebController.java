@@ -23,7 +23,7 @@ public class IncidentWebController {
     @GetMapping
     public String list(Model model) {
         model.addAttribute("incidents", incidentService.findAll());
-        return "incidents/list";
+        return "incidents";
     }
 
     @GetMapping("/new")
@@ -31,7 +31,7 @@ public class IncidentWebController {
         model.addAttribute("incident", new Incident());
         model.addAttribute("analysts", analystService.findAll());
         model.addAttribute("tags", tagService.findAll());
-        return "incidents/form";
+        return "incidents";
     }
 
     @PostMapping
@@ -47,7 +47,7 @@ public class IncidentWebController {
     @GetMapping("/{id}")
     public String view(@PathVariable Long id, Model model) {
         model.addAttribute("incident", incidentService.findById(id));
-        return "incidents/view";
+        return "incidents";
     }
 
     @GetMapping("/{id}/edit")
@@ -55,14 +55,14 @@ public class IncidentWebController {
         model.addAttribute("incident", incidentService.findById(id));
         model.addAttribute("analysts", analystService.findAll());
         model.addAttribute("tags", tagService.findAll());
-        return "incidents/form";
+        return "incidents";
     }
 
     @GetMapping("/{id}/report/new")
     public String newReportForm(@PathVariable Long id, Model model) {
         model.addAttribute("incident", incidentService.findById(id));
         model.addAttribute("report", new IncidentReport());
-        return "incidents/report-form";
+        return "incidents";
     }
 
     @PostMapping("/{id}/report")

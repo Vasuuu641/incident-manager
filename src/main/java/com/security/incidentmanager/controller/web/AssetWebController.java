@@ -22,7 +22,7 @@ public class AssetWebController {
         model.addAttribute("asset", asset);
         model.addAttribute("incident",
                 incidentService.findById(incidentId));
-        return "assets/form";
+        return "assets";
     }
 
     @PostMapping
