@@ -5,11 +5,12 @@ import com.security.incidentmanager.repository.AnalystRepository;
 import com.security.incidentmanager.domain.Incident;
 import com.security.incidentmanager.repository.IncidentRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
 public class IncidentService
-        extends AbstractCrudService<Incident, IncidentRepository>{
+        extends AbstractCrudService<Incident, IncidentRepository> {
 
     private final AnalystRepository analystRepository;
 
@@ -20,6 +21,21 @@ public class IncidentService
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<Incident> findAll() {
+        return repository.findAll();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Incident findById(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new RuntimeException(
+                        "Incident not found with id: " + id));
+    }
+
+    @Override
+    @Transactional
     public Incident save(Incident incident) {
         if (incident.getAnalyst() != null
                 && incident.getAnalyst().getId() != null) {
@@ -33,10 +49,12 @@ public class IncidentService
         return repository.save(incident);
     }
 
+    @Transactional(readOnly = true)
     public List<Incident> findByStatus(String status) {
         return repository.findByStatus(status);
     }
 
+    @Transactional(readOnly = true)
     public List<Incident> findByAnalystId(Long analystId) {
         return repository.findByAnalystId(analystId);
     }

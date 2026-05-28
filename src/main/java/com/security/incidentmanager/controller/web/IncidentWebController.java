@@ -5,6 +5,7 @@ import com.security.incidentmanager.domain.IncidentReport;
 import com.security.incidentmanager.service.AnalystService;
 import com.security.incidentmanager.service.IncidentService;
 import com.security.incidentmanager.service.TagService;
+import com.security.incidentmanager.service.SlaPolicyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,10 +20,12 @@ public class IncidentWebController {
     private final IncidentService incidentService;
     private final AnalystService analystService;
     private final TagService tagService;
+    private final SlaPolicyService slaPolicyService;
 
     @GetMapping
     public String list(Model model) {
         model.addAttribute("incidents", incidentService.findAll());
+        model.addAttribute("view", "list");
         return "incidents";
     }
 
@@ -31,6 +34,8 @@ public class IncidentWebController {
         model.addAttribute("incident", new Incident());
         model.addAttribute("analysts", analystService.findAll());
         model.addAttribute("tags", tagService.findAll());
+        model.addAttribute("policies", slaPolicyService.findAll());
+        model.addAttribute("view", "form");
         return "incidents";
     }
 
@@ -47,6 +52,7 @@ public class IncidentWebController {
     @GetMapping("/{id}")
     public String view(@PathVariable Long id, Model model) {
         model.addAttribute("incident", incidentService.findById(id));
+        model.addAttribute("view", "detail");
         return "incidents";
     }
 
@@ -55,6 +61,8 @@ public class IncidentWebController {
         model.addAttribute("incident", incidentService.findById(id));
         model.addAttribute("analysts", analystService.findAll());
         model.addAttribute("tags", tagService.findAll());
+        model.addAttribute("policies", slaPolicyService.findAll());
+        model.addAttribute("view", "form");
         return "incidents";
     }
 
@@ -62,7 +70,7 @@ public class IncidentWebController {
     public String newReportForm(@PathVariable Long id, Model model) {
         model.addAttribute("incident", incidentService.findById(id));
         model.addAttribute("report", new IncidentReport());
-        return "incidents";
+        return "report-form";
     }
 
     @PostMapping("/{id}/report")

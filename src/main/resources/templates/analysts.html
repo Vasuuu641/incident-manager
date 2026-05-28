@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head}"></head>
+<body>
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+<div class="container mt-4">
 
-<!-- ==================== LIST ==================== -->
-<th:block th:fragment="list">
-    <head th:replace="~{fragments/head :: head}"></head>
-    <body>
-    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
-    <div class="container mt-4">
-
+    <!-- LIST VIEW -->
+    <div th:if="${view == 'list'}">
         <div th:replace="~{fragments/page-header :: header(
         title='Analysts',
         subtitle='Security analysts assigned to incidents',
@@ -40,20 +39,14 @@
                         <td th:text="${analyst.name}"></td>
                         <td th:text="${analyst.email}"></td>
                         <td th:text="${analyst.specialization}"></td>
-                        <td th:text="${analyst.incidents != null} ?
-                            ${analyst.incidents.size()} : 0">
-                        </td>
+                        <td th:text="${analyst.incidents != null ? analyst.incidents.size() : 0}"></td>
                         <td>
                             <a th:href="@{/analysts/{id}/edit(id=${analyst.id})}"
-                               class="btn btn-sm btn-outline-warning me-1">
-                                Edit
-                            </a>
+                               class="btn btn-sm btn-outline-warning me-1">Edit</a>
                             <form th:action="@{/analysts/{id}/delete(id=${analyst.id})}"
                                   method="post" style="display:inline"
                                   onsubmit="return confirm('Delete this analyst?')">
-                                <button class="btn btn-sm btn-outline-danger">
-                                    Delete
-                                </button>
+                                <button class="btn btn-sm btn-outline-danger">Delete</button>
                             </form>
                         </td>
                     </tr>
@@ -62,72 +55,41 @@
             </div>
         </div>
     </div>
-    </body>
-</th:block>
 
-<!-- ==================== FORM ==================== -->
-<th:block th:fragment="form">
-    <head th:replace="~{fragments/head :: head}"></head>
-    <body>
-    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
-    <div class="container mt-4">
-
+    <!-- FORM VIEW -->
+    <div th:if="${view == 'form'}">
         <div th:replace="~{fragments/form-wrapper :: formTitle(
-        title=${analyst.id == null} ? 'New Analyst' : 'Edit Analyst',
+        title=${analyst.id == null ? 'New Analyst' : 'Edit Analyst'},
         subtitle='Analyst account details')}">
         </div>
 
         <div class="card p-4" style="max-width: 600px">
-            <form th:action="${analyst.id == null} ? @{/analysts} :
-              @{/analysts/{id}(id=${analyst.id})}" method="post">
+            <form th:action="${analyst.id == null ? '/analysts' : '/analysts/' + analyst.id}" method="post">
                 <div class="mb-3">
                     <label class="form-label">Full Name *</label>
-                    <input type="text" name="name"
-                           class="form-control"
-                           th:value="${analyst.name}"
-                           placeholder="e.g. Alice Chen" required>
+                    <input type="text" name="name" class="form-control" th:value="${analyst.name}" placeholder="e.g. Alice Chen" required>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Email</label>
-                    <input type="email" name="email"
-                           class="form-control"
-                           th:value="${analyst.email}"
-                           placeholder="e.g. alice@security.com">
+                    <input type="email" name="email" class="form-control" th:value="${analyst.email}" placeholder="e.g. alice@security.com">
                 </div>
                 <div class="mb-4">
                     <label class="form-label">Specialization</label>
                     <select name="specialization" class="form-select">
                         <option value="">Select specialization</option>
-                        <option value="Network Security"
-                                th:selected="${analyst.specialization == 'Network Security'}">
-                            Network Security
-                        </option>
-                        <option value="Malware Analysis"
-                                th:selected="${analyst.specialization == 'Malware Analysis'}">
-                            Malware Analysis
-                        </option>
-                        <option value="Incident Response"
-                                th:selected="${analyst.specialization == 'Incident Response'}">
-                            Incident Response
-                        </option>
-                        <option value="Threat Intelligence"
-                                th:selected="${analyst.specialization == 'Threat Intelligence'}">
-                            Threat Intelligence
-                        </option>
-                        <option value="Forensics"
-                                th:selected="${analyst.specialization == 'Forensics'}">
-                            Forensics
-                        </option>
+                        <option value="Network Security" th:selected="${analyst.specialization == 'Network Security'}">Network Security</option>
+                        <option value="Malware Analysis" th:selected="${analyst.specialization == 'Malware Analysis'}">Malware Analysis</option>
+                        <option value="Incident Response" th:selected="${analyst.specialization == 'Incident Response'}">Incident Response</option>
+                        <option value="Threat Intelligence" th:selected="${analyst.specialization == 'Threat Intelligence'}">Threat Intelligence</option>
+                        <option value="Forensics" th:selected="${analyst.specialization == 'Forensics'}">Forensics</option>
                     </select>
                 </div>
 
-                <div th:replace="~{fragments/form-buttons :: formButtons(
-                cancelUrl='/analysts')}">
-                </div>
+                <div th:replace="~{fragments/form-buttons :: formButtons(cancelUrl='/analysts')}"></div>
             </form>
         </div>
     </div>
-    </body>
-</th:block>
 
+</div>
+</body>
 </html>

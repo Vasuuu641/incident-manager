@@ -64,13 +64,12 @@
     <!-- FORM VIEW -->
     <div th:if="${view == 'form'}">
         <div th:replace="~{fragments/form-wrapper :: formTitle(
-            title=${tag.id == null} ? 'New Tag' : 'Edit Tag',
+            title=${tag.id == null ? 'New Tag' : 'Edit Tag'},
             subtitle='Create a category label for incident classification')}">
         </div>
 
         <div class="card p-4" style="max-width: 500px">
-            <form th:action="${tag.id == null} ? @{/tags} :
-                  @{/tags/{id}(id=${tag.id})}" method="post">
+            <form th:action="${tag.id == null ? '/tags' : '/tags/' + tag.id}" method="post">
                 <div class="mb-3">
                     <label class="form-label">Tag Name *</label>
                     <input type="text" name="name"
@@ -84,7 +83,7 @@
                     <div class="d-flex gap-2 align-items-center">
                         <input type="color" name="color"
                                class="form-control form-control-color"
-                               th:value="${tag.color} ?: '#6e7681'"
+                               th:value="${tag.color ?: '#6e7681'}"
                                style="width: 60px; height: 38px">
                         <small class="text-secondary">
                             Choose a color for this tag badge
