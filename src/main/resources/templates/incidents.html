@@ -74,7 +74,7 @@
     <!-- FORM VIEW -->
     <div th:if="${view == 'form'}">
         <div th:replace="~{fragments/form-wrapper :: formTitle(
-            title=${incident.id == null ? 'Report New Incident' : 'Edit Incident'},
+            title=${formTitle},
             subtitle='Fill in the details below to log a security incident')}">
         </div>
 

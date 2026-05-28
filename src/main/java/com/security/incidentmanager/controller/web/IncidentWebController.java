@@ -36,6 +36,7 @@ public class IncidentWebController {
         model.addAttribute("tags", tagService.findAll());
         model.addAttribute("policies", slaPolicyService.findAll());
         model.addAttribute("view", "form");
+        model.addAttribute("formTitle", "New Incident");
         return "incidents";
     }
 
@@ -63,6 +64,7 @@ public class IncidentWebController {
         model.addAttribute("tags", tagService.findAll());
         model.addAttribute("policies", slaPolicyService.findAll());
         model.addAttribute("view", "form");
+        model.addAttribute("formTitle", "Edit Incident");
         return "incidents";
     }
 
