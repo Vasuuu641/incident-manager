@@ -92,11 +92,12 @@
                            required>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Description</label>
+                    <label class="form-label">Description *</label>
                     <textarea name="description"
                               class="form-control" rows="3"
                               placeholder="Detailed description of what happened"
-                              th:text="${incident.description}">
+                              th:text="${incident.description}"
+                              required>
                     </textarea>
                 </div>
                 <div class="row">
@@ -117,9 +118,8 @@
                         </select>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Assign Analyst</label>
-                        <select name="analyst.id" class="form-select">
-                            <option value="">Unassigned</option>
+                        <label class="form-label">Assign Analyst *</label>
+                        <select name="analystId" class="form-select" required>
                             <option th:each="analyst : ${analysts}"
                                     th:value="${analyst.id}"
                                     th:text="${analyst.name}"
@@ -129,8 +129,8 @@
                         </select>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">SLA Policy</label>
-                        <select name="slaPolicy.id" class="form-select">
+                        <label class="form-label">SLA Policy *</label>
+                        <select name="slaPolicyId" class="form-select" required>
                             <option value="">No policy</option>
                             <option th:each="policy : ${policies}"
                                     th:value="${policy.id}"
@@ -140,16 +140,6 @@
                                         and incident.slaPolicy.id == policy.id}">
                             </option>
                         </select>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Detected At</label>
-                        <input type="datetime-local"
-                               name="detectedAt"
-                               class="form-control"
-                                th:value="${incident.detectedAt != null ? #temporals.format(incident.detectedAt, 'yyyy-MM-dd''T''HH:mm') : ''}">
-                        <small class="text-secondary">
-                            Leave blank to use current time
-                        </small>
                     </div>
                 </div>
                 <div class="mb-4">

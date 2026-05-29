@@ -12,6 +12,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
+import java.util.stream.Collectors;
+import java.util.List;
 
 @Controller
 @RequestMapping("/incidents")
@@ -44,13 +46,29 @@ public class IncidentWebController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public String create(@ModelAttribute Incident incident) {
-        incident.setDetectedAt(LocalDateTime.now());
+    public String create(@ModelAttribute Incident incident,
+                         @RequestParam(required = false) Long analystId,
+                         @RequestParam(required = false) Long slaPolicyId,
+                         @RequestParam(required = false) List<Long> tags) {
         if (incident.getDetectedAt() == null) {
             incident.setDetectedAt(LocalDateTime.now());
         }
+        resolveRelationships(incident, analystId, slaPolicyId, tags);
         incidentService.save(incident);
         return "redirect:/incidents";
+    }
+
+    private void resolveRelationships(Incident incident, Long analystId,
+                                      Long slaPolicyId, List<Long> tagIds) {
+        incident.setAnalyst(analystId != null ?
+                analystService.findById(analystId) : null);
+        incident.setSlaPolicy(slaPolicyId != null ?
+                slaPolicyService.findById(slaPolicyId) : null);
+        if (tagIds != null) {
+            incident.setTags(tagIds.stream()
+                    .map(tagService::findById)
+                    .collect(Collectors.toSet()));
+        }
     }
 
     @GetMapping("/{id}")
@@ -92,11 +110,16 @@ public class IncidentWebController {
     @PostMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public String update(@PathVariable Long id,
-                         @ModelAttribute Incident incident) {
+                         @ModelAttribute Incident incident,
+                         @RequestParam(required = false) Long analystId,
+                         @RequestParam(required = false) Long slaPolicyId,
+                         @RequestParam(required = false) List<Long> tags) {
         incident.setId(id);
+        resolveRelationships(incident, analystId, slaPolicyId, tags);
         incidentService.save(incident);
         return "redirect:/incidents";
     }
+
 
     @PostMapping("/{id}/delete")
     @PreAuthorize("hasRole('ADMIN')")
