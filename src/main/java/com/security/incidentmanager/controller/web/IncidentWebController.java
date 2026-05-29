@@ -114,9 +114,18 @@ public class IncidentWebController {
                          @RequestParam(required = false) Long analystId,
                          @RequestParam(required = false) Long slaPolicyId,
                          @RequestParam(required = false) List<Long> tags) {
-        incident.setId(id);
-        resolveRelationships(incident, analystId, slaPolicyId, tags);
-        incidentService.save(incident);
+
+        Incident existing = incidentService.findById(id);
+
+        // update only the fields the form controls
+        existing.setTitle(incident.getTitle());
+        existing.setDescription(incident.getDescription());
+        existing.setStatus(incident.getStatus());
+
+        // detectedAt stays as-is — never overwritten on edit
+
+        resolveRelationships(existing, analystId, slaPolicyId, tags);
+        incidentService.save(existing);
         return "redirect:/incidents";
     }
 
