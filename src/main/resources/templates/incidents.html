@@ -11,7 +11,7 @@
         <div th:replace="~{fragments/page-header :: header(
             title='Incidents',
             subtitle='All registered security incidents',
-            buttonText='+ New Incident',
+            buttonText=${#authorization.expression('hasRole(''ADMIN'')')} ? '+ New Incident' : null,
             buttonUrl='/incidents/new')}">
         </div>
 

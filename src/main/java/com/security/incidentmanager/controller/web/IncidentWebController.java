@@ -31,6 +31,7 @@ public class IncidentWebController {
     }
 
     @GetMapping("/new")
+    @PreAuthorize("hasRole('ADMIN')")
     public String newForm(Model model) {
         model.addAttribute("incident", new Incident());
         model.addAttribute("analysts", analystService.findAll());
@@ -42,6 +43,7 @@ public class IncidentWebController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public String create(@ModelAttribute Incident incident) {
         incident.setDetectedAt(LocalDateTime.now());
         if (incident.getDetectedAt() == null) {
