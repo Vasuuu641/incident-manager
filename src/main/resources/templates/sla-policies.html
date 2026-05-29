@@ -66,7 +66,7 @@
     <!-- FORM VIEW -->
     <div th:if="${view == 'form'}">
         <div th:replace="~{fragments/form-wrapper :: formTitle(
-            title=${policy.id == null ? 'New SLA Policy' : 'Edit SLA Policy'},
+            title=${formTitle},
             subtitle='Define response time requirements for each severity level')}">
         </div>
 

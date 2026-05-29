@@ -64,7 +64,7 @@
     <!-- FORM VIEW -->
     <div th:if="${view == 'form'}">
         <div th:replace="~{fragments/form-wrapper :: formTitle(
-            title=${tag.id == null ? 'New Tag' : 'Edit Tag'},
+            title=${formTitle},
             subtitle='Create a category label for incident classification')}">
         </div>
 

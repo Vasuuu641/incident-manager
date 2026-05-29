@@ -25,6 +25,7 @@ public class IncidentReportWebController {
     public String newForm(Model model) {
         model.addAttribute("report", new IncidentReport());
         model.addAttribute("view", "form");
+        model.addAttribute("formTitle", "New Incident Report");
         return "reports";
     }
 
@@ -38,6 +39,7 @@ public class IncidentReportWebController {
     public String editForm(@PathVariable Long id, Model model) {
         model.addAttribute("report", incidentReportService.findById(id));
         model.addAttribute("view", "form");
+        model.addAttribute("formTitle", "Edit Incident Report");
         return "reports";
     }
 

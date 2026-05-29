@@ -26,6 +26,7 @@ public class SlaPolicyWebController {
     public String newForm(Model model) {
         model.addAttribute("policy", new SlaPolicy());
         model.addAttribute("view", "form");
+        model.addAttribute("formTitle", "New SLA Policy");
         return "sla-policies";
     }
 
@@ -39,6 +40,7 @@ public class SlaPolicyWebController {
     public String editForm(@PathVariable Long id, Model model) {
         model.addAttribute("policy", slaPolicyService.findById(id));
         model.addAttribute("view", "form");
+        model.addAttribute("viewTitle", "Edit SLA Policy");
         return "sla-policies";
     }
 

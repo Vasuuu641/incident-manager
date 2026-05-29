@@ -25,6 +25,7 @@ public class TagWebController {
     public String newForm(Model model) {
         model.addAttribute("tag", new Tag());
         model.addAttribute("view", "form");
+        model.addAttribute("formTitle", "New Tag");
         return "tags";
     }
 
@@ -38,6 +39,7 @@ public class TagWebController {
     public String editForm(@PathVariable Long id, Model model) {
         model.addAttribute("tag", tagService.findById(id));
         model.addAttribute("view", "form");
+        model.addAttribute("formTitle", "Edit Tag");
         return "tags";
     }
 
