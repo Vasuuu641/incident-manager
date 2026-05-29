@@ -6,14 +6,15 @@ import com.security.incidentmanager.service.AnalystService;
 import com.security.incidentmanager.service.IncidentService;
 import com.security.incidentmanager.service.TagService;
 import com.security.incidentmanager.service.SlaPolicyService;
+import com.security.incidentmanager.util.SecurityUtils; // ADDED
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication; // ADDED
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
-import java.util.stream.Collectors;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/incidents")
@@ -26,14 +27,16 @@ public class IncidentWebController {
     private final SlaPolicyService slaPolicyService;
 
     @GetMapping
-    public String list(Model model) {
+    public String list(Model model, Authentication authentication) {
         model.addAttribute("incidents", incidentService.findAll());
         model.addAttribute("view", "list");
+        boolean isAdmin = SecurityUtils.isAdmin(authentication);
+        model.addAttribute("isAdmin", isAdmin);
+        model.addAttribute("buttonText", isAdmin ? "+ New Incident" : null);
         return "incidents";
     }
 
     @GetMapping("/new")
-    @PreAuthorize("hasRole('ADMIN')")
     public String newForm(Model model) {
         model.addAttribute("incident", new Incident());
         model.addAttribute("analysts", analystService.findAll());
@@ -45,7 +48,6 @@ public class IncidentWebController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
     public String create(@ModelAttribute Incident incident,
                          @RequestParam(required = false) Long analystId,
                          @RequestParam(required = false) Long slaPolicyId,
@@ -58,19 +60,6 @@ public class IncidentWebController {
         return "redirect:/incidents";
     }
 
-    private void resolveRelationships(Incident incident, Long analystId,
-                                      Long slaPolicyId, List<Long> tagIds) {
-        incident.setAnalyst(analystId != null ?
-                analystService.findById(analystId) : null);
-        incident.setSlaPolicy(slaPolicyId != null ?
-                slaPolicyService.findById(slaPolicyId) : null);
-        if (tagIds != null) {
-            incident.setTags(tagIds.stream()
-                    .map(tagService::findById)
-                    .collect(Collectors.toSet()));
-        }
-    }
-
     @GetMapping("/{id}")
     public String view(@PathVariable Long id, Model model) {
         model.addAttribute("incident", incidentService.findById(id));
@@ -79,7 +68,6 @@ public class IncidentWebController {
     }
 
     @GetMapping("/{id}/edit")
-    @PreAuthorize("hasRole('ADMIN')")
     public String editForm(@PathVariable Long id, Model model) {
         model.addAttribute("incident", incidentService.findById(id));
         model.addAttribute("analysts", analystService.findAll());
@@ -108,32 +96,36 @@ public class IncidentWebController {
     }
 
     @PostMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public String update(@PathVariable Long id,
                          @ModelAttribute Incident incident,
                          @RequestParam(required = false) Long analystId,
                          @RequestParam(required = false) Long slaPolicyId,
                          @RequestParam(required = false) List<Long> tags) {
-
         Incident existing = incidentService.findById(id);
-
-        // update only the fields the form controls
         existing.setTitle(incident.getTitle());
         existing.setDescription(incident.getDescription());
         existing.setStatus(incident.getStatus());
-
-        // detectedAt stays as-is — never overwritten on edit
-
         resolveRelationships(existing, analystId, slaPolicyId, tags);
         incidentService.save(existing);
         return "redirect:/incidents";
     }
 
-
     @PostMapping("/{id}/delete")
-    @PreAuthorize("hasRole('ADMIN')")
     public String delete(@PathVariable Long id) {
         incidentService.delete(id);
         return "redirect:/incidents";
+    }
+
+    private void resolveRelationships(Incident incident, Long analystId,
+                                      Long slaPolicyId, List<Long> tagIds) {
+        incident.setAnalyst(analystId != null ?
+                analystService.findById(analystId) : null);
+        incident.setSlaPolicy(slaPolicyId != null ?
+                slaPolicyService.findById(slaPolicyId) : null);
+        if (tagIds != null) {
+            incident.setTags(tagIds.stream()
+                    .map(tagService::findById)
+                    .collect(Collectors.toSet()));
+        }
     }
 }
