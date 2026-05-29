@@ -37,10 +37,7 @@
                         <td th:text="${policy.id}"></td>
                         <td>
                                 <span class="badge"
-                                      th:class="${policy.severity == 'CRITICAL'} ? 'badge bg-danger' :
-                                              (${policy.severity == 'HIGH'} ? 'badge badge-open' :
-                                              (${policy.severity == 'MEDIUM'} ? 'badge badge-progress' :
-                                              'badge bg-secondary'))"
+                                      th:class="${policy.severity == 'CRITICAL' ? 'badge bg-danger' : (policy.severity == 'HIGH' ? 'badge badge-open' : (policy.severity == 'MEDIUM' ? 'badge badge-progress' : 'badge bg-secondary'))}"
                                       th:text="${policy.severity}">
                                 </span>
                         </td>
@@ -69,13 +66,12 @@
     <!-- FORM VIEW -->
     <div th:if="${view == 'form'}">
         <div th:replace="~{fragments/form-wrapper :: formTitle(
-            title=${policy.id == null} ? 'New SLA Policy' : 'Edit SLA Policy',
+            title=${formTitle},
             subtitle='Define response time requirements for each severity level')}">
         </div>
 
         <div class="card p-4" style="max-width: 500px">
-            <form th:action="${policy.id == null} ? @{/sla-policies} :
-                  @{/sla-policies/{id}(id=${policy.id})}" method="post">
+            <form th:action="${policy.id == null ? '/sla-policies' : '/sla-policies/' + policy.id}" method="post">
                 <div class="mb-3">
                     <label class="form-label">Severity *</label>
                     <select name="severity" class="form-select" required>

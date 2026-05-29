@@ -17,12 +17,15 @@ public class AnalystWebController {
     @GetMapping
     public String list(Model model) {
         model.addAttribute("analysts", analystService.findAll());
+        model.addAttribute("view", "list");
         return "analysts";
     }
 
     @GetMapping("/new")
     public String newForm(Model model) {
         model.addAttribute("analyst", new Analyst());
+        model.addAttribute("view", "form");
+        model.addAttribute("formTitle", "New Analyst");
         return "analysts";
     }
 
@@ -35,6 +38,8 @@ public class AnalystWebController {
     @GetMapping("/{id}/edit")
     public String editForm(@PathVariable Long id, Model model) {
         model.addAttribute("analyst", analystService.findById(id));
+        model.addAttribute("view", "form");
+        model.addAttribute("formTitle", "Edit Analyst");
         return "analysts";
     }
 

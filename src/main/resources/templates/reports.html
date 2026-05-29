@@ -37,18 +37,12 @@
                         <td th:text="${report.id}"></td>
                         <td>
                                 <span class="badge"
-                                      th:class="${report.severity == 'CRITICAL'} ? 'badge bg-danger' :
-                                              (${report.severity == 'HIGH'} ? 'badge badge-open' :
-                                              (${report.severity == 'MEDIUM'} ? 'badge badge-progress' :
-                                              'badge bg-secondary'))"
+                                      th:class="${report.severity == 'CRITICAL' ? 'badge bg-danger' : (report.severity == 'HIGH' ? 'badge badge-open' : (report.severity == 'MEDIUM' ? 'badge badge-progress' : 'badge bg-secondary'))}"
                                       th:text="${report.severity}">
                                 </span>
                         </td>
                         <td th:text="${#strings.abbreviate(report.findings, 60)}"></td>
-                        <td th:text="${report.createdAt != null} ?
-                                ${#temporals.format(report.createdAt,
-                                'dd MMM yyyy')} : '-'">
-                        </td>
+                        <td th:text="${report.createdAt != null ? #temporals.format(report.createdAt, 'dd MMM yyyy') : '-'}"></td>
                         <td>
                             <a th:href="@{/reports/{id}/edit(id=${report.id})}"
                                class="btn btn-sm btn-outline-warning me-1">
@@ -72,13 +66,12 @@
     <!-- FORM VIEW -->
     <div th:if="${view == 'form'}">
         <div th:replace="~{fragments/form-wrapper :: formTitle(
-            title=${report.id == null} ? 'New Report' : 'Edit Report',
+            title=${formTitle},
             subtitle='Document findings and recommendations')}">
         </div>
 
         <div class="card p-4">
-            <form th:action="${report.id == null} ? @{/reports} :
-                  @{/reports/{id}(id=${report.id})}" method="post">
+            <form th:action="${report.id == null ? '/reports' : '/reports/' + report.id}" method="post">
                 <div class="mb-3">
                     <label class="form-label">Severity *</label>
                     <select name="severity" class="form-select" required>

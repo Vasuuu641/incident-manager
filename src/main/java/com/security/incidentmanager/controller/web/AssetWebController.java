@@ -22,6 +22,7 @@ public class AssetWebController {
         model.addAttribute("asset", asset);
         model.addAttribute("incident",
                 incidentService.findById(incidentId));
+        model.addAttribute("view", "form");
         return "assets";
     }
 
