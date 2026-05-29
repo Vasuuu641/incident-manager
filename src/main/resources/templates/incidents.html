@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
 <head th:replace="~{fragments/head :: head}"></head>
 <body>
 <nav th:replace="~{fragments/navbar :: navbar}"></nav>
@@ -54,9 +55,11 @@
                         <td>
                             <a th:href="@{/incidents/{id}(id=${incident.id})}"
                                class="btn btn-sm btn-outline-info me-1">View</a>
-                            <a th:href="@{/incidents/{id}/edit(id=${incident.id})}"
+                            <a sec:authorize="hasRole('ADMIN')"
+                               th:href="@{/incidents/{id}/edit(id=${incident.id})}"
                                class="btn btn-sm btn-outline-warning me-1">Edit</a>
-                            <form th:action="@{/incidents/{id}/delete(id=${incident.id})}"
+                            <form sec:authorize="hasRole('ADMIN')"
+                                  th:action="@{/incidents/{id}/delete(id=${incident.id})}"
                                   method="post" style="display:inline"
                                   onsubmit="return confirm('Delete this incident?')">
                                 <button class="btn btn-sm btn-outline-danger">
@@ -185,7 +188,8 @@
                 </span>
             </div>
             <div class="d-flex gap-2">
-                <a th:href="@{/incidents/{id}/edit(id=${incident.id})}"
+                <a sec:authorize="hasRole('ADMIN')"
+                   th:href="@{/incidents/{id}/edit(id=${incident.id})}"
                    class="btn btn-outline-warning">Edit</a>
                 <a href="/incidents"
                    class="btn btn-outline-secondary">Back</a>

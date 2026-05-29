@@ -7,6 +7,7 @@ import com.security.incidentmanager.service.IncidentService;
 import com.security.incidentmanager.service.TagService;
 import com.security.incidentmanager.service.SlaPolicyService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -58,6 +59,7 @@ public class IncidentWebController {
     }
 
     @GetMapping("/{id}/edit")
+    @PreAuthorize("hasRole('ADMIN')")
     public String editForm(@PathVariable Long id, Model model) {
         model.addAttribute("incident", incidentService.findById(id));
         model.addAttribute("analysts", analystService.findAll());
@@ -86,6 +88,7 @@ public class IncidentWebController {
     }
 
     @PostMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public String update(@PathVariable Long id,
                          @ModelAttribute Incident incident) {
         incident.setId(id);
@@ -94,6 +97,7 @@ public class IncidentWebController {
     }
 
     @PostMapping("/{id}/delete")
+    @PreAuthorize("hasRole('ADMIN')")
     public String delete(@PathVariable Long id) {
         incidentService.delete(id);
         return "redirect:/incidents";
