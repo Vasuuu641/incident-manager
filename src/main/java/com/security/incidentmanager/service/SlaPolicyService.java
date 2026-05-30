@@ -3,6 +3,7 @@ package com.security.incidentmanager.service;
 import com.security.incidentmanager.domain.SlaPolicy;
 import com.security.incidentmanager.repository.SlaPolicyRepository;
 import com.security.incidentmanager.repository.IncidentRepository;
+import com.security.incidentmanager.exception.BusinessRuleException;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
 
@@ -25,7 +26,7 @@ public class SlaPolicyService
     @Override
     public void delete(Long id) {
         if (!incidentRepository.findBySlaPolicyId(id).isEmpty()) {
-            throw new IllegalStateException(
+            throw new BusinessRuleException(
                     "Cannot delete SLA policy referenced by existing incidents");
         }
         repository.deleteById(id);
