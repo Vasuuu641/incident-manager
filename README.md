@@ -75,7 +75,9 @@ docker stop <container_id>
 - **Detailed reports** — attach findings and recommendations to each incident
 - **Asset tracking** — link affected systems and devices to incidents
 - **SLA enforcement** — assign response time policies per severity level with automatic escalation
-- **Role-based access** — analysts access the web UI, admins access the REST API
+- **Role-based access** — analysts can view all data; only admins can create, edit, or delete
+- **REST API** — full JSON API for all entities, restricted to admin role
+- **Global exception handling** — structured error pages for web and JSON responses for API
 - **Sample data** — pre-seeded incidents, analysts, tags, and SLA policies on startup
 
 ---
@@ -166,14 +168,33 @@ REST API requires ADMIN role — use Basic Auth with `admin` / `admin`.
 | PUT | `/api/sla-policies/{id}` | Update policy |
 | DELETE | `/api/sla-policies/{id}` | Delete policy (fails if incidents reference it) |
 
+### Error Responses
+All API errors return JSON in this format:
+```json
+{
+  "error": "NOT_FOUND",
+  "message": "Incident not found with id: 99"
+}
+```
+
+| HTTP Status | Error Code | Cause |
+|---|---|---|
+| 404 | `NOT_FOUND` | Entity does not exist |
+| 403 | `FORBIDDEN` | Insufficient role |
+| 409 | `CONFLICT` | Business rule violation (e.g. deleting a referenced SLA policy) |
+| 500 | `INTERNAL_ERROR` | Unexpected server error |
+
 ---
 
 ## 🔐 Security
 
 - Spring Security with form-based login and HTTP Basic Auth
-- Role-based access control — USER and ADMIN roles
-- REST API restricted to ADMIN role
-- Web UI accessible to USER and ADMIN roles
+- Two roles: `USER` (analyst) and `ADMIN`
+- **USER role** — read-only access to all web UI pages
+- **ADMIN role** — full create, edit, delete access across web UI and REST API
+- All write operations (POST) restricted to ADMIN at the security config level
+- Form pages (`/*/new`, `/*/edit`) restricted to ADMIN
+- REST API (`/api/**`) restricted to ADMIN
 - Passwords encoded with BCrypt
 - CSRF protection enabled for web UI, disabled for REST API
 
@@ -182,9 +203,9 @@ REST API requires ADMIN role — use Basic Auth with `admin` / `admin`.
 ## 🧪 Tests
 
 Unit tests written with JUnit 5, Mockito, and AssertJ covering:
-- `IncidentServiceTest` — 7 tests including analyst resolution and null handling
-- `AnalystServiceTest` — 6 tests including specialization filtering
-- `SlaPolicyServiceTest` — 8 tests including defensive delete logic
+- `IncidentServiceTest` — analyst resolution, null handling, save and delete
+- `AnalystServiceTest` — specialization filtering, CRUD operations
+- `SlaPolicyServiceTest` — defensive delete logic, business rule enforcement
 - `IncidentManagerApplicationTests` — integration test verifying context loads
 
 ```bash
@@ -203,10 +224,11 @@ Unit tests written with JUnit 5, Mockito, and AssertJ covering:
 | Database | H2 (in-memory) |
 | ORM | Spring Data JPA / Hibernate |
 | Templates | Thymeleaf + Bootstrap 5 |
-| Security | Spring Security |
+| Security | Spring Security + Thymeleaf Security Extras |
 | Build | Maven |
 | Containerization | Docker |
 | Testing | JUnit 5, Mockito, AssertJ |
+| Utilities | Lombok, Spring DevTools |
 
 ---
 
@@ -214,43 +236,84 @@ Unit tests written with JUnit 5, Mockito, and AssertJ covering:
 
 ```
 src/main/java/com/security/incidentmanager/
-├── domain/                  # JPA entities
-│   ├── Incident.java        # Central entity — all four relationships
-│   ├── IncidentReport.java  # OneToOne with Incident
-│   ├── Analyst.java         # ManyToOne from Incident
-│   ├── Asset.java           # OneToMany from Incident
-│   ├── Tag.java             # ManyToMany with Incident
-│   └── SlaPolicy.java       # ManyToOne from Incident
-├── repository/              # Spring Data JPA repositories
-├── service/                 # Business logic layer
+├── config/
+│   └── SecurityConfig.java          # Role-based access rules, in-memory users
 ├── controller/
-│   ├── api/                 # REST controllers (JSON)
-│   └── web/                 # Thymeleaf web controllers
-├── config/                  # Spring Security configuration
-├── DataSeeder.java          # Sample data on startup
-└── SlaScheduler.java        # SLA breach detection — runs every 60s
+│   ├── api/                         # REST controllers — JSON responses
+│   │   ├── AnalystRestController.java
+│   │   ├── AssetRestController.java
+│   │   ├── IncidentReportRestController.java
+│   │   ├── IncidentRestController.java
+│   │   ├── SlaPolicyRestController.java
+│   │   └── TagRestController.java
+│   └── web/                         # Thymeleaf web controllers
+│       ├── AnalystWebController.java
+│       ├── AssetWebController.java
+│       ├── HomeController.java
+│       ├── IncidentReportWebController.java
+│       ├── IncidentWebController.java
+│       ├── SlaPolicyWebController.java
+│       └── TagWebController.java
+├── domain/                          # JPA entities
+│   ├── BaseEntity.java
+│   ├── Incident.java
+│   ├── IncidentReport.java
+│   ├── Analyst.java
+│   ├── Asset.java
+│   ├── Tag.java
+│   └── SlaPolicy.java
+├── dto/
+│   ├── mapper/                      # Entity ↔ DTO mappers
+│   ├── request/                     # Inbound API request DTOs
+│   └── response/                    # Outbound API response DTOs
+├── exception/
+│   ├── EntityNotFoundException.java # Thrown when entity lookup fails
+│   ├── BusinessRuleException.java   # Thrown when a business rule is violated
+│   └── GlobalExceptionHandler.java  # @ControllerAdvice — handles all exceptions
+├── repository/                      # Spring Data JPA repositories
+├── service/                         # Business logic
+│   ├── AbstractCrudService.java     # Generic CRUD base class
+│   ├── CrudService.java             # CRUD interface
+│   ├── AnalystService.java
+│   ├── AssetService.java
+│   ├── IncidentReportService.java
+│   ├── IncidentService.java
+│   ├── SlaPolicyService.java
+│   └── TagService.java
+├── util/
+│   └── SecurityUtils.java           # Shared isAdmin() helper
+├── DataSeeder.java                  # Pre-loads sample data on startup
+├── SlaScheduler.java                # Runs every 60s to detect SLA breaches
+└── IncidentManagerApplication.java
 
 src/main/resources/
-├── templates/               # Thymeleaf HTML templates
-│   ├── layout.html          # Shared navbar and head fragments
-│   ├── home.html            # Dashboard with incident counts
-│   ├── login.html           # Custom login form
-│   ├── incidents/           # List, form, view
-│   ├── analysts/            # List, form
-│   ├── tags/                # List, form
-│   ├── reports/             # List, form
-│   ├── sla-policies/        # List, form
-│   └── assets/              # Add asset form
-└── application.properties
+├── static/                          # CSS and static assets
+└── templates/
+    ├── fragments/
+    │   ├── head.html                # Shared <head> with Bootstrap
+    │   ├── navbar.html              # Navigation bar
+    │   ├── page-header.html         # Page title + optional action button
+    │   ├── form-wrapper.html        # Form page title block
+    │   └── form-buttons.html        # Save/Cancel button pair
+    ├── analysts.html                # List and form views
+    ├── assets.html
+    ├── error.html                   # Global error page (404, 403, 500)
+    ├── home.html                    # Dashboard
+    ├── incidents.html               # List, form, and detail views
+    ├── login.html
+    ├── report-form.html
+    ├── reports.html
+    ├── sla-policies.html
+    └── tags.html
 
 src/test/java/com/security/incidentmanager/
-├── service/                 # Unit tests with Mockito
-│   ├── IncidentServiceTest.java
-│   ├── AnalystServiceTest.java
-│   └── SlaPolicyServiceTest.java
-└── IncidentManagerApplicationTests.java  # Integration test
+├── IncidentManagerApplicationTests.java
+└── service/
+    ├── AnalystServiceTest.java
+    ├── IncidentServiceTest.java
+    └── SlaPolicyServiceTest.java
 
-Dockerfile                   # Multi-stage build
+Dockerfile                           # Multi-stage build
 ```
 
 ---
@@ -258,11 +321,14 @@ Dockerfile                   # Multi-stage build
 ## 🚀 Project Status
 
 - [x] Project setup and configuration
-- [x] Domain entities with all four JPA relationships
-- [x] Repository and service layer
-- [x] REST API controllers for all entities
-- [x] Spring Security with role-based access control
+- [x] Domain entities with all four JPA relationship types
+- [x] Abstract service layer with generic CRUD base class
+- [x] REST API controllers with DTOs and mappers
 - [x] Thymeleaf web interface with full CRUD
+- [x] Reusable Thymeleaf fragments (navbar, head, page-header, form components)
+- [x] Spring Security with role-based access control
+- [x] Admin-only write access enforced at security config level
+- [x] Global exception handling with structured error pages and API responses
 - [x] Data seeder with sample data
 - [x] SLA policies with automatic escalation scheduler
 - [x] Unit tests with Mockito
