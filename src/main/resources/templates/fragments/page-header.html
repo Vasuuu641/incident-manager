@@ -9,7 +9,7 @@
         <p class="text-secondary" th:text="${subtitle}"></p>
     </div>
     <a th:if="${buttonText != null}"
-       th:href="${buttonUrl}"
+       th:href="@{${buttonUrl}}"
        class="btn btn-danger"
        th:text="${buttonText}">
     </a>

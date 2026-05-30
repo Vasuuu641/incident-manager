@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
 <head th:replace="~{fragments/head :: head}"></head>
 <body>
 <nav th:replace="~{fragments/navbar :: navbar}"></nav>
@@ -8,12 +9,11 @@
     <!-- LIST VIEW -->
     <div th:if="${view == 'list'}">
         <div th:replace="~{fragments/page-header :: header(
-        title='Analysts',
-        subtitle='Security analysts assigned to incidents',
-        buttonText='+ New Analyst',
-        buttonUrl='/analysts/new')}">
+            title='Analysts',
+            subtitle='Security analysts assigned to incidents',
+            buttonText=${buttonText},
+            buttonUrl='/analysts/new')}">
         </div>
-
         <div class="card">
             <div class="card-body p-0">
                 <table class="table table-dark table-hover mb-0">
@@ -24,7 +24,7 @@
                         <th>Email</th>
                         <th>Specialization</th>
                         <th>Incidents</th>
-                        <th>Actions</th>
+                        <th th:if="${isAdmin}">Actions</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -41,9 +41,11 @@
                         <td th:text="${analyst.specialization}"></td>
                         <td th:text="${analyst.incidents != null ? analyst.incidents.size() : 0}"></td>
                         <td>
-                            <a th:href="@{/analysts/{id}/edit(id=${analyst.id})}"
+                            <a sec:authorize="hasRole('ADMIN')"
+                               th:href="@{/analysts/{id}/edit(id=${analyst.id})}"
                                class="btn btn-sm btn-outline-warning me-1">Edit</a>
-                            <form th:action="@{/analysts/{id}/delete(id=${analyst.id})}"
+                            <form sec:authorize="hasRole('ADMIN')"
+                                  th:action="@{/analysts/{id}/delete(id=${analyst.id})}"
                                   method="post" style="display:inline"
                                   onsubmit="return confirm('Delete this analyst?')">
                                 <button class="btn btn-sm btn-outline-danger">Delete</button>

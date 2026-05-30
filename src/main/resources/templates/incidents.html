@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
 <head th:replace="~{fragments/head :: head}"></head>
 <body>
 <nav th:replace="~{fragments/navbar :: navbar}"></nav>
@@ -10,7 +11,7 @@
         <div th:replace="~{fragments/page-header :: header(
             title='Incidents',
             subtitle='All registered security incidents',
-            buttonText='+ New Incident',
+            buttonText=${#authorization.expression('hasRole(''ADMIN'')')} ? '+ New Incident' : null,
             buttonUrl='/incidents/new')}">
         </div>
 
@@ -54,9 +55,11 @@
                         <td>
                             <a th:href="@{/incidents/{id}(id=${incident.id})}"
                                class="btn btn-sm btn-outline-info me-1">View</a>
-                            <a th:href="@{/incidents/{id}/edit(id=${incident.id})}"
+                            <a sec:authorize="hasRole('ADMIN')"
+                               th:href="@{/incidents/{id}/edit(id=${incident.id})}"
                                class="btn btn-sm btn-outline-warning me-1">Edit</a>
-                            <form th:action="@{/incidents/{id}/delete(id=${incident.id})}"
+                            <form sec:authorize="hasRole('ADMIN')"
+                                  th:action="@{/incidents/{id}/delete(id=${incident.id})}"
                                   method="post" style="display:inline"
                                   onsubmit="return confirm('Delete this incident?')">
                                 <button class="btn btn-sm btn-outline-danger">
@@ -89,11 +92,12 @@
                            required>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Description</label>
+                    <label class="form-label">Description *</label>
                     <textarea name="description"
                               class="form-control" rows="3"
                               placeholder="Detailed description of what happened"
-                              th:text="${incident.description}">
+                              th:text="${incident.description}"
+                              required>
                     </textarea>
                 </div>
                 <div class="row">
@@ -114,9 +118,8 @@
                         </select>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Assign Analyst</label>
-                        <select name="analyst.id" class="form-select">
-                            <option value="">Unassigned</option>
+                        <label class="form-label">Assign Analyst *</label>
+                        <select name="analystId" class="form-select" required>
                             <option th:each="analyst : ${analysts}"
                                     th:value="${analyst.id}"
                                     th:text="${analyst.name}"
@@ -126,8 +129,8 @@
                         </select>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">SLA Policy</label>
-                        <select name="slaPolicy.id" class="form-select">
+                        <label class="form-label">SLA Policy *</label>
+                        <select name="slaPolicyId" class="form-select" required>
                             <option value="">No policy</option>
                             <option th:each="policy : ${policies}"
                                     th:value="${policy.id}"
@@ -137,16 +140,6 @@
                                         and incident.slaPolicy.id == policy.id}">
                             </option>
                         </select>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Detected At</label>
-                        <input type="datetime-local"
-                               name="detectedAt"
-                               class="form-control"
-                                th:value="${incident.detectedAt != null ? #temporals.format(incident.detectedAt, 'yyyy-MM-dd''T''HH:mm') : ''}">
-                        <small class="text-secondary">
-                            Leave blank to use current time
-                        </small>
                     </div>
                 </div>
                 <div class="mb-4">
@@ -185,7 +178,8 @@
                 </span>
             </div>
             <div class="d-flex gap-2">
-                <a th:href="@{/incidents/{id}/edit(id=${incident.id})}"
+                <a sec:authorize="hasRole('ADMIN')"
+                   th:href="@{/incidents/{id}/edit(id=${incident.id})}"
                    class="btn btn-outline-warning">Edit</a>
                 <a href="/incidents"
                    class="btn btn-outline-secondary">Back</a>

@@ -6,11 +6,15 @@ import com.security.incidentmanager.service.AnalystService;
 import com.security.incidentmanager.service.IncidentService;
 import com.security.incidentmanager.service.TagService;
 import com.security.incidentmanager.service.SlaPolicyService;
+import com.security.incidentmanager.util.SecurityUtils; // ADDED
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication; // ADDED
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/incidents")
@@ -23,9 +27,12 @@ public class IncidentWebController {
     private final SlaPolicyService slaPolicyService;
 
     @GetMapping
-    public String list(Model model) {
+    public String list(Model model, Authentication authentication) {
         model.addAttribute("incidents", incidentService.findAll());
         model.addAttribute("view", "list");
+        boolean isAdmin = SecurityUtils.isAdmin(authentication);
+        model.addAttribute("isAdmin", isAdmin);
+        model.addAttribute("buttonText", isAdmin ? "+ New Incident" : null);
         return "incidents";
     }
 
@@ -41,11 +48,14 @@ public class IncidentWebController {
     }
 
     @PostMapping
-    public String create(@ModelAttribute Incident incident) {
-        incident.setDetectedAt(LocalDateTime.now());
+    public String create(@ModelAttribute Incident incident,
+                         @RequestParam(required = false) Long analystId,
+                         @RequestParam(required = false) Long slaPolicyId,
+                         @RequestParam(required = false) List<Long> tags) {
         if (incident.getDetectedAt() == null) {
             incident.setDetectedAt(LocalDateTime.now());
         }
+        resolveRelationships(incident, analystId, slaPolicyId, tags);
         incidentService.save(incident);
         return "redirect:/incidents";
     }
@@ -87,9 +97,16 @@ public class IncidentWebController {
 
     @PostMapping("/{id}")
     public String update(@PathVariable Long id,
-                         @ModelAttribute Incident incident) {
-        incident.setId(id);
-        incidentService.save(incident);
+                         @ModelAttribute Incident incident,
+                         @RequestParam(required = false) Long analystId,
+                         @RequestParam(required = false) Long slaPolicyId,
+                         @RequestParam(required = false) List<Long> tags) {
+        Incident existing = incidentService.findById(id);
+        existing.setTitle(incident.getTitle());
+        existing.setDescription(incident.getDescription());
+        existing.setStatus(incident.getStatus());
+        resolveRelationships(existing, analystId, slaPolicyId, tags);
+        incidentService.save(existing);
         return "redirect:/incidents";
     }
 
@@ -97,5 +114,18 @@ public class IncidentWebController {
     public String delete(@PathVariable Long id) {
         incidentService.delete(id);
         return "redirect:/incidents";
+    }
+
+    private void resolveRelationships(Incident incident, Long analystId,
+                                      Long slaPolicyId, List<Long> tagIds) {
+        incident.setAnalyst(analystId != null ?
+                analystService.findById(analystId) : null);
+        incident.setSlaPolicy(slaPolicyId != null ?
+                slaPolicyService.findById(slaPolicyId) : null);
+        if (tagIds != null) {
+            incident.setTags(tagIds.stream()
+                    .map(tagService::findById)
+                    .collect(Collectors.toSet()));
+        }
     }
 }

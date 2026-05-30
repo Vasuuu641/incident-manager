@@ -10,20 +10,20 @@
         <div th:replace="~{fragments/page-header :: header(
             title='SLA Policies',
             subtitle='Response time requirements by incident severity',
-            buttonText='+ New Policy',
+            buttonText=${buttonText},
             buttonUrl='/sla-policies/new')}">
         </div>
 
-        <div class="card">
+        <div class="card" style="display: inline-block; min-width: 100%">
             <div class="card-body p-0">
-                <table class="table table-dark table-hover mb-0">
+                <table class="table table-dark table-hover mb-0" style="table-layout: auto">
                     <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Severity</th>
-                        <th>Resolution (hours)</th>
-                        <th>Escalation (hours)</th>
-                        <th>Actions</th>
+                        <th style="width: 60px">ID</th>
+                        <th style="width: 120px">Severity</th>
+                        <th style="width: 200px">Resolution (hours)</th>
+                        <th style="width: 200px">Escalation (hours)</th>
+                        <th th:if="${isAdmin}" style="width: 150px">Actions</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -43,7 +43,7 @@
                         </td>
                         <td th:text="${policy.resolutionHours} + ' hrs'"></td>
                         <td th:text="${policy.escalationHours} + ' hrs'"></td>
-                        <td>
+                        <td th:if="${isAdmin}">
                             <a th:href="@{/sla-policies/{id}/edit(id=${policy.id})}"
                                class="btn btn-sm btn-outline-warning me-1">
                                 Edit
