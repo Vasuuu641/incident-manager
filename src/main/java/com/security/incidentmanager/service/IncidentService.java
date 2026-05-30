@@ -4,6 +4,7 @@ import com.security.incidentmanager.domain.Analyst;
 import com.security.incidentmanager.repository.AnalystRepository;
 import com.security.incidentmanager.domain.Incident;
 import com.security.incidentmanager.repository.IncidentRepository;
+import com.security.incidentmanager.exception.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -30,7 +31,7 @@ public class IncidentService
     @Transactional(readOnly = true)
     public Incident findById(Long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException(
+                .orElseThrow(() -> new EntityNotFoundException(
                         "Incident not found with id: " + id));
     }
 
@@ -41,7 +42,7 @@ public class IncidentService
                 && incident.getAnalyst().getId() != null) {
             Analyst analyst = analystRepository
                     .findById(incident.getAnalyst().getId())
-                    .orElseThrow(() -> new RuntimeException("Analyst not found"));
+                    .orElseThrow(() -> new EntityNotFoundException("Analyst not found"));
             incident.setAnalyst(analyst);
         } else {
             incident.setAnalyst(null);

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head}"></head>
+<body>
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+<div class="container mt-4">
+    <div class="card p-5 text-center"
+         style="max-width: 600px; margin: 80px auto">
+
+        <!-- Error code displayed large -->
+        <h1 th:text="${errorCode}"
+            class="display-1 fw-bold"
+            th:classappend="${errorCode == 404 ? ' text-warning' :
+                             (errorCode == 403 ? ' text-danger' : ' text-secondary')}">
+        </h1>
+
+        <h4 class="mb-3" th:text="${errorTitle}"></h4>
+
+        <p class="text-secondary" th:text="${errorMessage}"></p>
+
+        <div class="d-flex justify-content-center gap-2 mt-4">
+            <!-- Go back button uses browser history -->
+            <a href="javascript:history.back()"
+               class="btn btn-outline-secondary">
+                Go Back
+            </a>
+            <a href="/home" class="btn btn-outline-danger">
+                Go Home
+            </a>
+        </div>
+    </div>
+</div>
+</body>
+</html>
