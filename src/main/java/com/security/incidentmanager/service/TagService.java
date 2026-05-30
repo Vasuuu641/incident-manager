@@ -13,9 +13,4 @@ public class TagService
     public TagService(TagRepository repository) {
         super(repository);
     }
-
-    public Optional<Tag> findByName(String name) {
-        repository.findByName(name);
-        return repository.findByName(name);
-    }
 }

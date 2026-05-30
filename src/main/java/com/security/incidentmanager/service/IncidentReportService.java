@@ -13,7 +13,4 @@ public class IncidentReportService
         super(repository);
     }
 
-    public List<IncidentReport> findBySeverity(String severity) {
-        return repository.findBySeverity(severity);
-    }
 }

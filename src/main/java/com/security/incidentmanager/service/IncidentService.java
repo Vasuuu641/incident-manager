@@ -53,9 +53,4 @@ public class IncidentService
     public List<Incident> findByStatus(String status) {
         return repository.findByStatus(status);
     }
-
-    @Transactional(readOnly = true)
-    public List<Incident> findByAnalystId(Long analystId) {
-        return repository.findByAnalystId(analystId);
-    }
 }
