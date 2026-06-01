@@ -6,8 +6,10 @@ import com.security.incidentmanager.dto.response.TagResponseDTO;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TagMapper {
+public class TagMapper
+        implements AbstractMapper<Tag, TagRequestDTO, TagResponseDTO> {
 
+    @Override
     public TagResponseDTO toResponseDTO(Tag tag) {
         TagResponseDTO dto = new TagResponseDTO();
         dto.setId(tag.getId());
@@ -17,6 +19,7 @@ public class TagMapper {
         return dto;
     }
 
+    @Override
     public Tag toEntity(TagRequestDTO dto) {
         Tag tag = new Tag();
         tag.setName(dto.getName());

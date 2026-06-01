@@ -6,8 +6,10 @@ import com.security.incidentmanager.dto.response.AssetResponseDTO;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AssetMapper {
+public class AssetMapper
+        implements AbstractMapper<Asset, AssetRequestDTO, AssetResponseDTO> {
 
+    @Override
     public AssetResponseDTO toResponseDTO(Asset asset) {
         AssetResponseDTO dto = new AssetResponseDTO();
         dto.setId(asset.getId());
@@ -22,6 +24,7 @@ public class AssetMapper {
         return dto;
     }
 
+    @Override
     public Asset toEntity(AssetRequestDTO dto) {
         Asset asset = new Asset();
         asset.setHostname(dto.getHostname());
