@@ -16,21 +16,22 @@
                 <input type="hidden" name="incidentId"
                        th:value="${incident.id}">
                 <div class="mb-3">
-                    <label class="form-label">Hostname</label>
+                    <label class="form-label">Hostname *</label>
                     <input type="text" name="hostname"
                            class="form-control"
-                           placeholder="e.g. web-server-01">
+                           placeholder="e.g. web-server-01"
+                           required>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">IP Address</label>
+                    <label class="form-label">IP Address *</label>
                     <input type="text" name="ipAddress"
                            class="form-control"
-                           placeholder="e.g. 192.168.1.100">
+                           placeholder="e.g. 192.168.1.100"
+                           required>
                 </div>
                 <div class="mb-4">
-                    <label class="form-label">Asset Type</label>
-                    <select name="assetType" class="form-select">
-                        <option value="">Select type</option>
+                    <label class="form-label">Asset Type *</label>
+                    <select name="assetType" class="form-select" required>
                         <option value="SERVER">Server</option>
                         <option value="WORKSTATION">Workstation</option>
                         <option value="NETWORK_DEVICE">Network Device</option>

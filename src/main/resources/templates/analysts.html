@@ -72,12 +72,12 @@
                     <input type="text" name="name" class="form-control" th:value="${analyst.name}" placeholder="e.g. Alice Chen" required>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Email</label>
-                    <input type="email" name="email" class="form-control" th:value="${analyst.email}" placeholder="e.g. alice@security.com">
+                    <label class="form-label">Email *</label>
+                    <input type="email" name="email" class="form-control" th:value="${analyst.email}" placeholder="e.g. alice@security.com" required>
                 </div>
                 <div class="mb-4">
-                    <label class="form-label">Specialization</label>
-                    <select name="specialization" class="form-select">
+                    <label class="form-label">Specialization *</label>
+                    <select name="specialization" class="form-select" required>
                         <option value="">Select specialization</option>
                         <option value="Network Security" th:selected="${analyst.specialization == 'Network Security'}">Network Security</option>
                         <option value="Malware Analysis" th:selected="${analyst.specialization == 'Malware Analysis'}">Malware Analysis</option>
