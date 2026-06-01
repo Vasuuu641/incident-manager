@@ -2,58 +2,36 @@ package com.security.incidentmanager.controller.web;
 
 import com.security.incidentmanager.domain.Tag;
 import com.security.incidentmanager.service.TagService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import com.security.incidentmanager.service.CrudService;
 
 @Controller
 @RequestMapping("/tags")
-@RequiredArgsConstructor
-public class TagWebController {
+public class TagWebController
+        extends AbstractWebController<Tag> {
 
     private final TagService tagService;
 
-    @GetMapping
-    public String list(Model model) {
-        model.addAttribute("tags", tagService.findAll());
-        model.addAttribute("view", "list");
-        return "tags";
+    public TagWebController(TagService tagService) {
+        this.tagService = tagService;
     }
 
-    @GetMapping("/new")
-    public String newForm(Model model) {
-        model.addAttribute("tag", new Tag());
-        model.addAttribute("view", "form");
-        model.addAttribute("formTitle", "New Tag");
-        return "tags";
-    }
+    @Override
+    protected CrudService<Tag, Long> getService() { return tagService; }
 
-    @PostMapping
-    public String create(@ModelAttribute Tag tag) {
-        tagService.save(tag);
-        return "redirect:/tags";
-    }
+    @Override
+    protected String getTemplateName() { return "tags"; }
 
-    @GetMapping("/{id}/edit")
-    public String editForm(@PathVariable Long id, Model model) {
-        model.addAttribute("tag", tagService.findById(id));
-        model.addAttribute("view", "form");
-        model.addAttribute("formTitle", "Edit Tag");
-        return "tags";
-    }
+    @Override
+    protected String getEntityAttributeName() { return "tag"; }
 
-    @PostMapping("/{id}")
-    public String update(@PathVariable Long id,
-                         @ModelAttribute Tag tag) {
-        tag.setId(id);
-        tagService.save(tag);
-        return "redirect:/tags";
-    }
+    @Override
+    protected String getBaseUrl() { return "/tags"; }
 
-    @PostMapping("/{id}/delete")
-    public String delete(@PathVariable Long id) {
-        tagService.delete(id);
-        return "redirect:/tags";
-    }
+    @Override
+    protected String getNewButtonLabel() { return "+ New Tag"; }
+
+    @Override
+    protected Tag newEntity() { return new Tag(); }
 }
