@@ -5,22 +5,18 @@ import com.security.incidentmanager.domain.Tag;
 import com.security.incidentmanager.dto.mapper.IncidentMapper;
 import com.security.incidentmanager.dto.request.IncidentRequestDTO;
 import com.security.incidentmanager.dto.response.IncidentResponseDTO;
-import com.security.incidentmanager.service.AnalystService;
-import com.security.incidentmanager.service.IncidentService;
-import com.security.incidentmanager.service.SlaPolicyService;
-import com.security.incidentmanager.service.TagService;
-import lombok.RequiredArgsConstructor;
+import com.security.incidentmanager.dto.mapper.AbstractMapper;
+import com.security.incidentmanager.service.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/incidents")
-@RequiredArgsConstructor
-public class IncidentRestController {
+public class IncidentRestController
+        extends AbstractRestController<Incident, IncidentRequestDTO, IncidentResponseDTO> {
 
     private final IncidentService incidentService;
     private final AnalystService analystService;
@@ -28,22 +24,32 @@ public class IncidentRestController {
     private final SlaPolicyService slaPolicyService;
     private final IncidentMapper incidentMapper;
 
-    @GetMapping
-    public List<IncidentResponseDTO> getAll() {
-        return incidentService.findAll()
-                .stream()
-                .map(incidentMapper::toResponseDTO)
-                .collect(Collectors.toList());
+    public IncidentRestController(IncidentService incidentService,
+                                  AnalystService analystService,
+                                  TagService tagService,
+                                  SlaPolicyService slaPolicyService,
+                                  IncidentMapper incidentMapper) {
+        this.incidentService = incidentService;
+        this.analystService = analystService;
+        this.tagService = tagService;
+        this.slaPolicyService = slaPolicyService;
+        this.incidentMapper = incidentMapper;
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<IncidentResponseDTO> getById(
-            @PathVariable Long id) {
-        return ResponseEntity.ok(
-                incidentMapper.toResponseDTO(
-                        incidentService.findById(id)));
+    // required by AbstractRestController
+    @Override
+    protected CrudService<Incident, Long> getService() {
+        return incidentService;
     }
 
+    // required by AbstractRestController
+    @Override
+    protected AbstractMapper<Incident, IncidentRequestDTO,
+            IncidentResponseDTO> getMapper() {
+        return incidentMapper;
+    }
+
+    @Override
     @PostMapping
     public ResponseEntity<IncidentResponseDTO> create(
             @RequestBody IncidentRequestDTO dto) {
@@ -54,6 +60,7 @@ public class IncidentRestController {
                 .body(incidentMapper.toResponseDTO(saved));
     }
 
+    @Override
     @PutMapping("/{id}")
     public ResponseEntity<IncidentResponseDTO> update(
             @PathVariable Long id,
@@ -64,12 +71,6 @@ public class IncidentRestController {
         return ResponseEntity.ok(
                 incidentMapper.toResponseDTO(
                         incidentService.save(incident)));
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        incidentService.delete(id);
-        return ResponseEntity.noContent().build();
     }
 
     // resolves IDs from the request DTO into managed entities

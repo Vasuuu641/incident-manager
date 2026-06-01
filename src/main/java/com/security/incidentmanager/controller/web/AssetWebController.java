@@ -37,7 +37,9 @@ public class AssetWebController {
     @PostMapping("/{id}/delete")
     public String delete(@PathVariable Long id,
                          @RequestParam Long incidentId) {
-        assetService.delete(id);
+
+        incidentService.deleteAsset(incidentId, id);
+
         return "redirect:/incidents/" + incidentId;
     }
 }

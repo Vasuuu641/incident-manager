@@ -1,6 +1,7 @@
 package com.security.incidentmanager.service;
 
 import com.security.incidentmanager.domain.Analyst;
+import com.security.incidentmanager.domain.Asset;
 import com.security.incidentmanager.repository.AnalystRepository;
 import com.security.incidentmanager.domain.Incident;
 import com.security.incidentmanager.repository.IncidentRepository;
@@ -19,6 +20,21 @@ public class IncidentService
                            AnalystRepository analystRepository) {
         super(repository);
         this.analystRepository = analystRepository;
+    }
+
+    @Transactional
+    public void deleteAsset(Long incidentId, Long assetId) {
+
+        Incident incident = repository.findById(incidentId)
+                .orElseThrow();
+
+        System.out.println("BEFORE REMOVE: " + incident.getAssets().size());
+
+        boolean removed = incident.getAssets()
+                .removeIf(a -> a.getId().equals(assetId));
+
+        System.out.println("REMOVED? " + removed);
+        System.out.println("AFTER REMOVE: " + incident.getAssets().size());
     }
 
     @Override

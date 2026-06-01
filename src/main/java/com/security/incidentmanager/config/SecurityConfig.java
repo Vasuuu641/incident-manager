@@ -32,10 +32,11 @@ public class SecurityConfig {
 
                         // ADDED: POST (create, update, delete) — admin only
                         .requestMatchers(HttpMethod.POST, "/incidents/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/assets/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/analysts/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/tags/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/sla-policies/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/assets/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/reports/**").hasRole("ADMIN")
 
                         // ADDED: GET form pages — admin only
                         .requestMatchers("/incidents/new", "/incidents/*/edit").hasRole("ADMIN")
@@ -62,7 +63,10 @@ public class SecurityConfig {
                         .permitAll()
                 )
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/h2-console/**", "/api/**")
+                        .ignoringRequestMatchers(
+                                "/h2-console/**",
+                                "/api/**"
+                        )
                 )
                 .headers(headers -> headers
                         .frameOptions(frame -> frame.disable())
