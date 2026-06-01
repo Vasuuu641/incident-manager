@@ -8,12 +8,10 @@ import com.security.incidentmanager.service.AssetService;
 import com.security.incidentmanager.service.CrudService;
 import com.security.incidentmanager.service.IncidentService;
 import com.security.incidentmanager.dto.mapper.AbstractMapper;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
-import java.util.stream.Collectors;
+
 
 @RestController
 @RequestMapping("/api/assets")

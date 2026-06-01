@@ -111,9 +111,12 @@ public class IncidentWebController {
     }
 
     @PostMapping("/{id}/delete")
-    public String delete(@PathVariable Long id) {
-        incidentService.delete(id);
-        return "redirect:/incidents";
+    public String delete(@PathVariable Long id,
+                         @RequestParam Long incidentId) {
+
+        incidentService.deleteAsset(incidentId, id);
+
+        return "redirect:/incidents/" + incidentId;
     }
 
     private void resolveRelationships(Incident incident, Long analystId,

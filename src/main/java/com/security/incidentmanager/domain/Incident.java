@@ -46,7 +46,7 @@ public class Incident extends BaseEntity {
     private SlaPolicy slaPolicy;
 
     // OneToMany — one incident has many affected assets
-    @OneToMany(mappedBy = "incident", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "incident", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @lombok.EqualsAndHashCode.Exclude
     @lombok.ToString.Exclude
     private List<Asset> assets;
