@@ -35,6 +35,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/analysts/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/tags/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/sla-policies/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/assets/**").hasRole("ADMIN")
 
                         // ADDED: GET form pages — admin only
                         .requestMatchers("/incidents/new", "/incidents/*/edit").hasRole("ADMIN")
