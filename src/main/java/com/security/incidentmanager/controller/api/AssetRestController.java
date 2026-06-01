@@ -5,7 +5,9 @@ import com.security.incidentmanager.dto.mapper.AssetMapper;
 import com.security.incidentmanager.dto.request.AssetRequestDTO;
 import com.security.incidentmanager.dto.response.AssetResponseDTO;
 import com.security.incidentmanager.service.AssetService;
+import com.security.incidentmanager.service.CrudService;
 import com.security.incidentmanager.service.IncidentService;
+import com.security.incidentmanager.dto.mapper.AbstractMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,29 +17,32 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/assets")
-@RequiredArgsConstructor
-public class AssetRestController {
+public class AssetRestController
+        extends AbstractRestController<Asset, AssetRequestDTO, AssetResponseDTO> {
 
     private final AssetService assetService;
     private final IncidentService incidentService;
     private final AssetMapper assetMapper;
 
-    @GetMapping
-    public List<AssetResponseDTO> getAll() {
-        return assetService.findAll()
-                .stream()
-                .map(assetMapper::toResponseDTO)
-                .collect(Collectors.toList());
+    public AssetRestController(AssetService assetService,
+                               IncidentService incidentService,
+                               AssetMapper assetMapper) {
+        this.assetService = assetService;
+        this.incidentService = incidentService;
+        this.assetMapper = assetMapper;
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<AssetResponseDTO> getById(
-            @PathVariable Long id) {
-        return ResponseEntity.ok(
-                assetMapper.toResponseDTO(
-                        assetService.findById(id)));
+    @Override
+    protected CrudService<Asset, Long> getService() {
+        return assetService;
     }
 
+    @Override
+    protected AbstractMapper<Asset, AssetRequestDTO, AssetResponseDTO> getMapper() {
+        return assetMapper;
+    }
+
+    @Override
     @PostMapping
     public ResponseEntity<AssetResponseDTO> create(
             @RequestBody AssetRequestDTO dto) {
@@ -51,6 +56,7 @@ public class AssetRestController {
                 .body(assetMapper.toResponseDTO(saved));
     }
 
+    @Override
     @PutMapping("/{id}")
     public ResponseEntity<AssetResponseDTO> update(
             @PathVariable Long id,
@@ -65,9 +71,4 @@ public class AssetRestController {
                 assetMapper.toResponseDTO(assetService.save(asset)));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        assetService.delete(id);
-        return ResponseEntity.noContent().build();
-    }
 }
