@@ -6,8 +6,10 @@ import com.security.incidentmanager.dto.response.SlaPolicyResponseDTO;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SlaPolicyMapper {
+public class SlaPolicyMapper
+        implements AbstractMapper<SlaPolicy, SlaPolicyRequestDTO, SlaPolicyResponseDTO> {
 
+    @Override
     public SlaPolicyResponseDTO toResponseDTO(SlaPolicy policy) {
         SlaPolicyResponseDTO dto = new SlaPolicyResponseDTO();
         dto.setId(policy.getId());
@@ -21,6 +23,8 @@ public class SlaPolicyMapper {
         return dto;
     }
 
+
+    @Override
     public SlaPolicy toEntity(SlaPolicyRequestDTO dto) {
         SlaPolicy policy = new SlaPolicy();
         policy.setSeverity(dto.getSeverity());

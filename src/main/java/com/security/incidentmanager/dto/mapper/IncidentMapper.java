@@ -9,8 +9,10 @@ import org.springframework.stereotype.Component;
 import java.util.stream.Collectors;
 
 @Component
-public class IncidentMapper {
+public class IncidentMapper
+        implements AbstractMapper<Incident, IncidentRequestDTO, IncidentResponseDTO> {
 
+    @Override
     public IncidentResponseDTO toResponseDTO(Incident incident) {
         IncidentResponseDTO dto = new IncidentResponseDTO();
         dto.setId(incident.getId());
@@ -63,6 +65,7 @@ public class IncidentMapper {
         return dto;
     }
 
+    @Override
     public Incident toEntity(IncidentRequestDTO dto) {
         Incident incident = new Incident();
         incident.setTitle(dto.getTitle());

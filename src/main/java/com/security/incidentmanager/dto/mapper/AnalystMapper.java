@@ -6,8 +6,10 @@ import com.security.incidentmanager.dto.response.AnalystResponseDTO;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AnalystMapper {
+public class AnalystMapper
+            implements AbstractMapper<Analyst, AnalystRequestDTO, AnalystResponseDTO> {
 
+    @Override
     public AnalystResponseDTO toResponseDTO(Analyst analyst) {
         AnalystResponseDTO dto = new AnalystResponseDTO();
         dto.setId(analyst.getId());
@@ -21,6 +23,7 @@ public class AnalystMapper {
         return dto;
     }
 
+    @Override
     public Analyst toEntity(AnalystRequestDTO dto) {
         Analyst analyst = new Analyst();
         analyst.setName(dto.getName());

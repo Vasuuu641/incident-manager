@@ -6,8 +6,10 @@ import com.security.incidentmanager.dto.response.IncidentReportResponseDTO;
 import org.springframework.stereotype.Component;
 
 @Component
-public class IncidentReportMapper {
+public class IncidentReportMapper
+        implements AbstractMapper<IncidentReport, IncidentReportRequestDTO, IncidentReportResponseDTO> {
 
+    @Override
     public IncidentReportResponseDTO toResponseDTO(
             IncidentReport report) {
         IncidentReportResponseDTO dto =
@@ -24,6 +26,7 @@ public class IncidentReportMapper {
         return dto;
     }
 
+    @Override
     public IncidentReport toEntity(IncidentReportRequestDTO dto) {
         IncidentReport report = new IncidentReport();
         report.setFindings(dto.getFindings());
